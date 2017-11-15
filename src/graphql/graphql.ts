@@ -23,6 +23,13 @@ export type LoginUserMutation = {
   } | null,
 };
 
+export type LogoutUserMutation = {
+  logoutUser:  {
+    __typename: "LogoutUserPayload",
+    clientMutationId: string | null,
+  } | null,
+};
+
 export type UserFragment = {
   __typename: "UserNode",
   uuid: string,

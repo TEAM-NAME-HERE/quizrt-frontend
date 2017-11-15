@@ -28,7 +28,7 @@ class RegisterComponent
             Register
           </Typography>
           <Typography type="headline">
-            Sign up for Quizirt - It'll only take a moment...
+            Sign up for Quizrt - It'll only take a moment...
           </Typography>
           <form className={classes.content} noValidate={true} autoComplete="off">
             <TextField

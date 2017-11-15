@@ -7,6 +7,8 @@ import Button from 'material-ui/Button';
 import { graphql, ChildProps } from 'react-apollo';
 import { Link, Redirect } from 'react-router-dom';
 import { LoginUserMutation, LoginUserMutationVariables } from '../../graphql/graphql';
+import { store } from '../../App';
+import { setUser } from '../../actions/user';
 
 const decorate = withStyles(({ palette, spacing }) => ({
   card: {
@@ -46,9 +48,12 @@ class LoginComponent extends React.Component<AllProps, State> {
   constructor(props: AllProps) {
     super(props);
 
+    const userUuid = store.getState().user.uuid;
+
     this.state = {
       email: '',
       password: '',
+      redirect: !!userUuid
     };
   }
 
@@ -76,6 +81,9 @@ class LoginComponent extends React.Component<AllProps, State> {
         error: undefined,
         redirect: true
       });
+      if (result.data.loginUser.uuid) {
+        store.dispatch(setUser(result.data.loginUser.uuid));
+      }
     }
   }
 
