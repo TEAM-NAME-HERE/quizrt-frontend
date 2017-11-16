@@ -1,0 +1,14 @@
+#import "../fragments/User.graphql"
+#import "../fragments/Profile.graphql"
+query UserWithProfiles($id: ID!) {
+  user(id: $id) {
+    ...User
+    classProfiles {
+      edges {
+        node {
+          ...Profile
+        }
+      }
+    }
+  }
+}
