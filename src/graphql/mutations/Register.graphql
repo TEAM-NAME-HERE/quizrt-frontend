@@ -2,14 +2,11 @@
 
 mutation CreateUser($username: String!, $name: String!, $email: String!, $password: String!) {
   createUser(input: {
-    userData: {
       username: $username,
       name: $name,
       email: $email,
       password: $password
-    }
   }) {
-    uuid
     user {
       ...User
     }

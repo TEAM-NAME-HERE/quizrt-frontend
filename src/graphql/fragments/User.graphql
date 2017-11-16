@@ -1,5 +1,5 @@
 fragment User on UserNode {
-  uuid
+  username
   email
   name
   id

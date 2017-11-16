@@ -63,7 +63,7 @@ class LoginComponent extends React.Component<AllProps, State> {
     const result = await mutate!({
       variables: queryVars(this.state)
     });
-    if (result.data.loginUser && result.data.loginUser.status === 401) {
+    if (result.errors && result.errors[0].message === '401 Unauthorized') {
       this.setState({
         ...this.state,
         error: 'Invalid username or password',
@@ -81,8 +81,8 @@ class LoginComponent extends React.Component<AllProps, State> {
         error: undefined,
         redirect: true
       });
-      if (result.data.loginUser.uuid) {
-        store.dispatch(setUser(result.data.loginUser.uuid));
+      if (result.data.loginUser.user.id) {
+        store.dispatch(setUser(result.data.loginUser.user.id));
       }
     }
   }
