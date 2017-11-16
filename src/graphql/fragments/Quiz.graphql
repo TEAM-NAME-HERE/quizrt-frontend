@@ -1,0 +1,6 @@
+fragment Quiz on QuizNode {
+  id
+  name
+  description
+  isPrivate
+}

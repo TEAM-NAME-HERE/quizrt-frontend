@@ -9,16 +9,14 @@ export type LoginUserMutationVariables = {
 export type LoginUserMutation = {
   loginUser:  {
     __typename: "LoginUserPayload",
-    uuid: string | null,
-    status: number | null,
     user:  {
       __typename: "UserNode",
-      uuid: string,
+      username: string,
       email: string,
       name: string,
       // The ID of the object.
       id: string,
-    } | null,
+    },
     clientMutationId: string | null,
   } | null,
 };
@@ -40,10 +38,9 @@ export type CreateUserMutationVariables = {
 export type CreateUserMutation = {
   createUser:  {
     __typename: "CreateUserPayload",
-    uuid: string | null,
     user:  {
       __typename: "UserNode",
-      uuid: string,
+      username: string,
       email: string,
       name: string,
       // The ID of the object.
@@ -52,9 +49,18 @@ export type CreateUserMutation = {
   } | null,
 };
 
+export type QuizFragment = {
+  __typename: "QuizNode",
+  // The ID of the object.
+  id: string,
+  name: string,
+  description: string,
+  isPrivate: boolean,
+};
+
 export type UserFragment = {
   __typename: "UserNode",
-  uuid: string,
+  username: string,
   email: string,
   name: string,
   // The ID of the object.

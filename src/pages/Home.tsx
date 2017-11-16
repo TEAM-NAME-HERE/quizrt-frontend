@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { QuizCard } from '../components';
+// import { QuizCard } from '../components';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
 import { withStyles, WithStyles } from 'material-ui/styles';
@@ -14,7 +14,7 @@ const quizzes = [
 
 const QuizContainer: React.SFC<{className?: string}> = (props) => (
   <div className={props.className ? props.className : ''}>
-  {quizzes.map(q => <QuizCard style={{margin: '20px'}} quiz={q} key={q.uuid} />)}
+  {quizzes.map(q => <div key={q.uuid}> haha </div>)}
   </div>
 );
 
