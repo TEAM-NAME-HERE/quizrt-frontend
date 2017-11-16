@@ -19,6 +19,7 @@ const decorate = withStyles(({ palette, spacing }) => ({
 
 export interface Props {
   style?: React.CSSProperties;
+  className?: string;
 }
 
 type AllProps = WithStyles<'card'>
@@ -132,11 +133,11 @@ class RegisterComponent extends React.Component<AllProps, State> {
 
   render() {
     // tslint:disable-next-line:no-any
-    const { classes, style } = this.props;
+    const { classes, style, className } = this.props;
     return (
-      <div>
+      <div style={style} className={className ? className : ''}>
       { !this.state.redirect ?
-      <Card style={style} className={classes.card}>
+      <Card className={classes.card}>
         <CardContent>
           <Typography type="display3" component="h2">
             Register

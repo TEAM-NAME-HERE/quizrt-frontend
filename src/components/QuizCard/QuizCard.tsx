@@ -23,7 +23,7 @@ const QuizCard: React.SFC<QuizCardProps> = (props) => {
     };
     return (
       <Card style={style ? style : {}} >
-        <CardHeader title={`Quiz ${props.quiz.id}`} />
+        <CardHeader title={`${props.quiz.name}`} />
         <CardContent>
           <Typography type="body1">
             {props.quiz.description}
@@ -52,6 +52,9 @@ export const QuizList: React.SFC<QuizListProps> = (props) => {
   };
   return (
   <div className={props.className ? props.className : ''}>
+    {props.quizzes.length === 0 &&
+      <Typography type="headline"> No Quizzes... </Typography>
+    }
     {props.quizzes.map(q =>
       <QuizCard
         style={{margin: '20px'}}

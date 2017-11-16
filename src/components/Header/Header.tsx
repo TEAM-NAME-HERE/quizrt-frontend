@@ -12,6 +12,7 @@ import { graphql, ChildProps } from 'react-apollo';
 import { LogoutUserMutation } from '../../graphql/graphql';
 import { store } from '../../App';
 import { setUser } from '../../actions/user';
+import { USER_ID } from '../../constants';
 
 // tslint:disable-next-line:no-any
 const LinkButton: React.SFC<LinkProps & ButtonProps> = p => <Button component={Link as any} {...p} />;
@@ -59,6 +60,7 @@ class Header extends React.Component<AllProps, State> {
 
     if (result.data) {
       store.dispatch(setUser(''));
+      localStorage.removeItem(USER_ID);
       this.handleRequestClose();
     }
   }

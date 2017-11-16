@@ -9,6 +9,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { LoginUserMutation, LoginUserMutationVariables } from '../../graphql/graphql';
 import { store } from '../../App';
 import { setUser } from '../../actions/user';
+import { USER_ID } from '../../constants';
 
 const decorate = withStyles(({ palette, spacing }) => ({
   card: {
@@ -82,6 +83,7 @@ class LoginComponent extends React.Component<AllProps, State> {
         redirect: true
       });
       if (result.data.loginUser.user.id) {
+        localStorage.setItem(USER_ID, result.data.loginUser.user.id);
         store.dispatch(setUser(result.data.loginUser.user.id));
       }
     }

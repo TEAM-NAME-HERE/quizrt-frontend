@@ -15,6 +15,8 @@ import {
 } from 'react-router-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
+import { USER_ID } from './constants';
+import { setUser } from './actions/user';
 import reducer from './reducers';
 import 'typeface-roboto';
 
@@ -35,6 +37,10 @@ const client = new ApolloClient({
 
 class App extends React.Component {
   render() {
+    const userId = localStorage.getItem(USER_ID);
+    if (userId) {
+      store.dispatch(setUser(userId));
+    }
     return (
       <Provider store={store} >
       <ApolloProvider client={client}>
