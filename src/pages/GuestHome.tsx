@@ -3,6 +3,9 @@ import * as React from 'react';
 import { RegisterForm } from '../components';
 import Typography from 'material-ui/Typography';
 import { withStyles } from 'material-ui/styles';
+import { store } from '../App';
+import { setTheme } from '../actions/theme';
+import { blueTheme } from '../components/styles/theme';
 
 const decorate = withStyles(({palette, breakpoints}) => ({
   container: {
@@ -40,7 +43,9 @@ const decorate = withStyles(({palette, breakpoints}) => ({
   }
 }));
 
-const GuestHome = decorate(({ classes }) => (
+const GuestHome = decorate(({ classes }) => {
+  store.dispatch(setTheme(blueTheme));
+  return (
   <div className={classes.container}>
     <div className={classes.textContainer}>
       <Typography className={classes.text} type="display3">Built for Quizzers</Typography>
@@ -52,6 +57,7 @@ const GuestHome = decorate(({ classes }) => (
     </div>
     <RegisterForm className={classes.form} />
   </div>
-));
+  );
+});
 
 export default GuestHome;
