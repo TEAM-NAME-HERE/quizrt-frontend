@@ -1,29 +1,32 @@
 import * as React from 'react';
 import { RegisterForm } from '../components';
-// import Button, { ButtonProps } from 'material-ui/Button';
-import { withStyles, WithStyles } from 'material-ui/styles';
-// import { css } from 'glamor';
+import { connect } from 'react-redux';
+import { withStyles } from 'material-ui/styles';
+import { compose } from 'redux';
+import { setTheme } from '../actions/theme';
+import { redTheme } from '../components/styles/theme';
 
 const decorate = withStyles(({ palette }) => ({
   container: {
-    backgroundColor: palette.primary[500],
     display: 'flex',
     flexFlow: 'row wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: 'calc(100vh - 128px)'
   } as React.CSSProperties
 }));
 
-export class Register extends React.Component<WithStyles<'container'>> {
-  render() {
-    const { classes } = this.props;
-    return (
-    <div className={classes.container} >
+// tslint:disable-next-line:no-any
+
+const wrapper = compose(decorate, connect());
+
+// tslint:disable-next-line:no-any
+const Register = wrapper((props: any) => {
+  props.dispatch(setTheme(redTheme));
+  return (
+    <div className={props.classes.container} >
       <RegisterForm style={{width: '600px'}} />
     </div>
   );
-  }
-}
+});
 
-export default decorate<{}>(Register);
+export default Register;

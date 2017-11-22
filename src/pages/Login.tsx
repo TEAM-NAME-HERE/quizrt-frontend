@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { LoginForm } from '../components';
 import Button, { ButtonProps } from 'material-ui/Button';
-import { withStyles, WithStyles } from 'material-ui/styles';
+import { withStyles } from 'material-ui/styles';
 // import { css } from 'glamor';
 
 const btnDecorate = withStyles(({ typography }) => ({
@@ -16,7 +16,6 @@ const decorate = withStyles(({ typography, breakpoints }) => ({
     flexFlow: 'row wrap',
     justifyContent: 'space-around',
     alignItems: 'flex-start',
-    padding: 100,
     [breakpoints.down('md')]: {
       padding: 0
     }
@@ -26,10 +25,7 @@ const decorate = withStyles(({ typography, breakpoints }) => ({
   }
 }));
 
-export class Login extends React.Component<WithStyles<'container'> & WithStyles<'element'>> {
-  render() {
-    const {classes} = this.props;
-    return (
+const Login = decorate(({ classes }) => (
     <div className={classes.container} >
       <LoginForm className={classes.element} style={{width: '600px'}} />
       <BigButton
@@ -41,8 +37,6 @@ export class Login extends React.Component<WithStyles<'container'> & WithStyles<
       Continue as Guest
       </BigButton>
     </div>
-  );
-  }
-}
+));
 
-export default decorate<{}>(Login);
+export default Login;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { QuizList } from '../components/QuizCard';
+import { QuizList, EditQuiz } from '../components/Quiz';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import { MenuItem } from 'material-ui/Menu';
 import Input, { InputLabel } from 'material-ui/Input';
@@ -11,7 +11,9 @@ import { ProfileWithQuizzesQuery, UserWithProfilesQuery, QuizFragment } from '..
 import { graphql, ChildProps } from 'react-apollo';
 import { State } from '../reducers/index';
 import { connect } from 'react-redux';
-import GuestHome from './GuestHome';
+import { setTheme } from '../actions/theme';
+import { greenTheme } from '../components/styles/theme';
+import { store } from '../App';
 // tslint:disable:no-any
 // tslint:disable:no-console
 
@@ -46,12 +48,8 @@ const QuizContainer = withProfile(({ data, className }) => {
 
 const decorate = withStyles(({palette, breakpoints}) => ({
   container: {
-    padding: 24,
-    backgroundColor: palette.primary[500],
-    //               view   header   padding
-    minHeight: 'calc(100% - 128px - (24px * 2))',
   } as React.CSSProperties,
-  quizzes: {
+  main: {
     width: '100%',
     [breakpoints.up('lg')]: {
       width: '66%'
@@ -84,7 +82,7 @@ const withUser = graphql<UserWithProfilesQuery, HomeProps>(USER_WITH_PROFILES_QU
 });
 
 type AllProps = WithStyles<'container'>
-              & WithStyles<'quizzes'>
+              & WithStyles<'main'>
               & WithStyles<'tabContainer'>
               & ChildProps<HomeProps, UserWithProfilesQuery>;
 
@@ -102,9 +100,25 @@ class Home extends React.Component<AllProps, HomeState> {
     };
   }
 
+  componentDidUpdate() {
+    const data = this.props.data;
+    const user = data && data.user;
+    if (user && user.classProfiles && user.classProfiles.edges) {
+      const first = user.classProfiles.edges[0];
+      const firstId = first && first.node && first.node.id;
+      if (firstId && this.state.profile === '') {
+        this.setState({
+          ...this.state,
+          profile: firstId
+        });
+      }
+    }
+  }
+
   render() {
     const { classes } = this.props;
     const { value } = this.state;
+    store.dispatch(setTheme(greenTheme));
     const data = this.props.data;
     const error = data && data.error;
     const loading = data && data.loading;
@@ -125,11 +139,11 @@ class Home extends React.Component<AllProps, HomeState> {
             >
               <Typography type="display3"> Welcome, {user && user.name} </Typography>
               <FormControl style={{minWidth: '100px'}}>
-                <InputLabel htmlFor="profile">Profile</InputLabel>
+                <InputLabel htmlFor="class">Class</InputLabel>
                 <Select
                   value={this.state.profile}
                   onChange={e => this.setState({ ...this.state, profile: e.target.value })}
-                  input={<Input id="profile" />}
+                  input={<Input id="class" />}
                 >
                   {user && user.classProfiles && user.classProfiles.edges.map(
                     e => e && e.node && (
@@ -142,8 +156,8 @@ class Home extends React.Component<AllProps, HomeState> {
             <Tabs
               value={this.state.value}
               onChange={(e, v) => this.setState({ ...this.state, value: v })}
-              indicatorColor="accent"
-              textColor="accent"
+              indicatorColor="primary"
+              textColor="primary"
               centered={true}
             >
               <Tab label="Create Quiz" />
@@ -151,17 +165,20 @@ class Home extends React.Component<AllProps, HomeState> {
               <Tab label="Join Quiz" />
             </Tabs>
             <div className={classes.tabContainer}>
-              {value === 0 && null}
+              {value === 0 &&
+                <EditQuiz
+                  className={classes.main}
+                  onSave={q => console.log(q)}
+                  onDelete={q => console.log(q)}
+                />
+              }
               {value === 1 &&
                 <div className={classes.tabContainer}>
-                  <QuizContainer profile={this.state.profile} className={classes.quizzes} />
+                  <QuizContainer profile={this.state.profile} className={classes.main} />
                 </div>}
               {value === 2 && null}
             </div>
           </div>
-      }
-      {!user &&
-        <GuestHome />
       }
     </div>
     );

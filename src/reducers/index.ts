@@ -1,4 +1,5 @@
 import * as user from './user';
+import * as theme from './theme';
 import { combineReducers, Action } from 'redux';
 
 export interface ActionReducer<T, V extends Action = Action> {
@@ -11,10 +12,12 @@ export type ActionReducerMap<T, V extends Action = Action> = {
 
 export interface State {
   user: user.State;
+  theme: theme.State;
 }
 
 const reducers: ActionReducerMap<State> = {
-  user: user.reducer
+  user: user.reducer,
+  theme: theme.reducer
 };
 
 export default combineReducers<State>(reducers);

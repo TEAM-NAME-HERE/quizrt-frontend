@@ -42,21 +42,21 @@ export const colors = {
   },
   red: {
     primary: {
-      50: '#fce6ea',
-      100: '#f8c1ca',
-      200: '#f498a7',
-      300: '#ef6e84',
-      400: '#eb4f69',
-      500: '#e8304f',
-      600: '#e52b48',
-      700: '#e2243f',
-      800: '#de1e36',
-      900: '#d81326',
+      50: '#fdeef0',
+      100: '#fad4da',
+      200: '#f7b7c2',
+      300: '#f49aa9',
+      400: '#f18496',
+      500: '#ef6e84',
+      600: '#ed667c',
+      700: '#eb5b71',
+      800: '#e85167',
+      900: '#e43f54',
       A100: '#ffffff',
-      A200: '#ffd4d8',
-      A400: '#ffa1a8',
-      A700: '#ff8891',
-      'contrastDefaultColor': 'light',
+      A200: '#ffffff',
+      A400: '#ffcdd3',
+      A700: '#ffb3bc',
+      'contrastDefaultColor': 'dark',
     } as Color,
     secondary: {
       50: '#f6f8fb',
@@ -94,6 +94,25 @@ export const colors = {
       A700: '#60ff7f',
       'contrastDefaultColor': 'dark',
     } as Color
+  },
+  purple: {
+    primary: {
+      50: '#f5edfd',
+      100: '#e6d3f9',
+      200: '#d6b5f5',
+      300: '#c697f1',
+      400: '#b981ee',
+      500: '#ad6beb',
+      600: '#a663e9',
+      700: '#9c58e5',
+      800: '#934ee2',
+      900: '#833cdd',
+      A100: '#ffffff',
+      A200: '#faf6ff',
+      A400: '#ddc3ff',
+      A700: '#ceaaff',
+      'contrastDefaultColor': 'dark',
+    } as Color
   }
 };
 
@@ -114,6 +133,13 @@ export const redTheme = createMuiTheme({
 export const greenTheme = createMuiTheme({
   palette: {
     primary: colors.green.primary,
+    secondary: colors.red.secondary,
+  }
+});
+
+export const purpleTheme = createMuiTheme({
+  palette: {
+    primary: colors.purple.primary,
     secondary: colors.red.secondary,
   }
 });
