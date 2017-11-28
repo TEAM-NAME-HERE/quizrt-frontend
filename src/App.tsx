@@ -1,22 +1,47 @@
 import * as React from 'react';
-import { Header } from './components';
+import { HeaderContainer } from './components';
 import { Home, About, Explore, Login, Register } from './pages';
 // import { ThemeProvider } from './components/styled-components';
 import { MuiThemeProvider } from 'material-ui/styles';
 import { blueTheme, redTheme, greenTheme } from './components/styles/theme';
+import { ApolloProvider } from 'react-apollo';
+import { ApolloCache } from 'apollo-cache';
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
 import {
   BrowserRouter as Router,
   Route
 } from 'react-router-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import reducer from './reducers';
 import 'typeface-roboto';
+
+export let store = createStore(
+  reducer,
+  // tslint:disable-next-line:no-any
+  (window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
+);
+
+const client = new ApolloClient({
+  link: new HttpLink({
+    uri: '/graphql',
+    credentials: 'include'
+  }),
+  // tslint:disable-next-line:no-any
+  cache: new InMemoryCache() as ApolloCache<NormalizedCacheObject>
+});
 
 class App extends React.Component {
   render() {
     return (
+      <Provider store={store} >
+      <ApolloProvider client={client}>
       <MuiThemeProvider theme={blueTheme}>
       <Router>
         <div className="App">
-          <Header />
+          <HeaderContainer />
 
           <MuiThemeProvider theme={greenTheme}>
             <Route exact={true} path="/" component={Home} />
@@ -30,6 +55,8 @@ class App extends React.Component {
         </div>
       </Router>
       </MuiThemeProvider>
+      </ApolloProvider>
+      </Provider>
     );
   }
 }

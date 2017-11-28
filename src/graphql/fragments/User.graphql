@@ -1,0 +1,6 @@
+fragment User on UserNode {
+  uuid
+  email
+  name
+  id
+}
