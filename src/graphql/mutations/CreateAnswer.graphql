@@ -1,0 +1,13 @@
+#import "../fragments/Answer.graphql"
+mutation CreateAnswer($description: String!, $question: ID!, $isCorrect: Boolean!) {
+  createAnswer(input: {answerData: {
+    description: $description,
+    question: $question,
+    isCorrect: $isCorrect
+  }}) {
+    answer {
+      ...Answer
+    }
+    clientMutationId
+  }
+}

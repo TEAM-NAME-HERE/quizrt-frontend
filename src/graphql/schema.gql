@@ -1,0 +1,389 @@
+input AnswerInput {
+  description: String!
+  question: ID!
+  isCorrect: Boolean!
+}
+
+type AnswerNode implements Node {
+  # The ID of the object.
+  id: ID!
+  description: String!
+  question: QuestionNode!
+  isCorrect: Boolean!
+}
+
+type AnswerNodeConnection {
+  pageInfo: PageInfo!
+  edges: [AnswerNodeEdge]!
+}
+
+type AnswerNodeEdge {
+  # The item at the end of the edge
+  node: AnswerNode
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type ClassProfileNode implements Node {
+  # The ID of the object.
+  id: ID!
+  name: String!
+  description: String!
+  isPrivate: Boolean!
+  userSet(before: String, after: String, first: Int, last: Int, email: String, name: String, name_Icontains: String, username: String, username_Icontains: String): UserNodeConnection
+  quizSet(before: String, after: String, first: Int, last: Int, isPrivate: Boolean, name: String, name_Icontains: String, description_Icontains: String, id: ID): QuizNodeConnection
+}
+
+type ClassProfileNodeConnection {
+  pageInfo: PageInfo!
+  edges: [ClassProfileNodeEdge]!
+}
+
+type ClassProfileNodeEdge {
+  # The item at the end of the edge
+  node: ClassProfileNode
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input CreateAnswerInput {
+  answerData: AnswerInput!
+  clientMutationId: String
+}
+
+type CreateAnswerPayload {
+  answer: AnswerNode
+  clientMutationId: String
+}
+
+input CreateProfileInput {
+  profileData: ProfileInput!
+  clientMutationId: String
+}
+
+type CreateProfilePayload {
+  profile: ClassProfileNode
+  clientMutationId: String
+}
+
+input CreateQuestionInput {
+  questionData: QuestionInput!
+  clientMutationId: String
+}
+
+type CreateQuestionPayload {
+  question: QuestionNode
+  clientMutationId: String
+}
+
+input CreateQuizInput {
+  quizData: QuizInput!
+  clientMutationId: String
+}
+
+type CreateQuizPayload {
+  quiz: QuizNode
+  clientMutationId: String
+}
+
+input CreateUserInput {
+  username: String
+  profileList: [ID]
+  name: String!
+  email: String!
+  password: String!
+  clientMutationId: String
+}
+
+type CreateUserPayload {
+  user: UserNode
+  clientMutationId: String
+}
+
+# The `DateTime` scalar type represents a DateTime
+# value as specified by
+# [iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+scalar DateTime
+
+input DeleteAnswerInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DeleteAnswerPayload {
+  success: Boolean
+  clientMutationId: String
+}
+
+input DeleteClassProfileInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DeleteClassProfilePayload {
+  success: Boolean
+  clientMutationId: String
+}
+
+input DeleteQuestionInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DeleteQuestionPayload {
+  success: Boolean
+  clientMutationId: String
+}
+
+input DeleteQuizInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DeleteQuizPayload {
+  success: Boolean
+  clientMutationId: String
+}
+
+input DeleteUserInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DeleteUserPayload {
+  success: Boolean
+  clientMutationId: String
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
+  clientMutationId: String
+}
+
+type LoginUserPayload {
+  user: UserNode!
+  clientMutationId: String
+}
+
+input LogoutUserInput {
+  clientMutationId: String
+}
+
+type LogoutUserPayload {
+  clientMutationId: String
+}
+
+type Mutation {
+  createAnswer(input: CreateAnswerInput!): CreateAnswerPayload
+  updateAnswer(input: UpdateAnswerInput!): UpdateAnswerPayload
+  deleteAnswer(input: DeleteAnswerInput!): DeleteAnswerPayload
+  createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
+  updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
+  deleteQuestion(input: DeleteQuestionInput!): DeleteQuestionPayload
+  createQuiz(input: CreateQuizInput!): CreateQuizPayload
+  updateQuiz(input: UpdateQuizInput!): UpdateQuizPayload
+  deleteQuiz(input: DeleteQuizInput!): DeleteQuizPayload
+  createProfile(input: CreateProfileInput!): CreateProfilePayload
+  updateProfile(input: UpdateClassProfileInput!): UpdateClassProfilePayload
+  deleteProfile(input: DeleteClassProfileInput!): DeleteClassProfilePayload
+  loginUser(input: LoginUserInput!): LoginUserPayload
+  logoutUser(input: LogoutUserInput!): LogoutUserPayload
+  createUser(input: CreateUserInput!): CreateUserPayload
+  deleteUser(input: DeleteUserInput!): DeleteUserPayload
+  updateUser(input: UpdateUserInput!): UpdateUserPayload
+}
+
+# An object with an ID
+interface Node {
+  # The ID of the object.
+  id: ID!
+}
+
+type PageInfo {
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
+}
+
+input ProfileInput {
+  name: String!
+  description: String!
+  isPrivate: Boolean
+}
+
+type Query {
+  answers(before: String, after: String, first: Int, last: Int, isCorrect: Boolean, id: ID, description_Icontains: String, question: ID): AnswerNodeConnection
+
+  # The ID of the object
+  answer(id: ID!): AnswerNode
+  questions(before: String, after: String, first: Int, last: Int, prompt: String, id: ID, quiz: ID): QuestionNodeConnection
+
+  # The ID of the object
+  question(id: ID!): QuestionNode
+  quizzes(before: String, after: String, first: Int, last: Int, isPrivate: Boolean, name: String, name_Icontains: String, description_Icontains: String, id: ID): QuizNodeConnection
+
+  # The ID of the object
+  quiz(id: ID!): QuizNode
+  profiles(before: String, after: String, first: Int, last: Int, name: String, name_Icontains: String, description_Icontains: String, id: ID): ClassProfileNodeConnection
+
+  # The ID of the object
+  profile(id: ID!): ClassProfileNode
+
+  # The ID of the object
+  user(id: ID!): UserNode
+  users(before: String, after: String, first: Int, last: Int, email: String, name: String, name_Icontains: String, username: String, username_Icontains: String): UserNodeConnection
+}
+
+input QuestionInput {
+  prompt: String!
+  quiz: ID!
+}
+
+type QuestionNode implements Node {
+  # The ID of the object.
+  id: ID!
+  prompt: String!
+  quiz: QuizNode!
+  answerSet(before: String, after: String, first: Int, last: Int, isCorrect: Boolean, id: ID, description_Icontains: String, question: ID): AnswerNodeConnection
+}
+
+type QuestionNodeConnection {
+  pageInfo: PageInfo!
+  edges: [QuestionNodeEdge]!
+}
+
+type QuestionNodeEdge {
+  # The item at the end of the edge
+  node: QuestionNode
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input QuizInput {
+  name: String!
+  description: String!
+  isPrivate: Boolean
+  profile: ID!
+}
+
+type QuizNode implements Node {
+  # The ID of the object.
+  id: ID!
+  name: String!
+  description: String!
+  isPrivate: Boolean!
+  classProfile: ClassProfileNode!
+  questionSet(before: String, after: String, first: Int, last: Int, prompt: String, id: ID, quiz: ID): QuestionNodeConnection
+}
+
+type QuizNodeConnection {
+  pageInfo: PageInfo!
+  edges: [QuizNodeEdge]!
+}
+
+type QuizNodeEdge {
+  # The item at the end of the edge
+  node: QuizNode
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+input UpdateAnswerInput {
+  id: ID!
+  description: String
+  isCorrect: Boolean
+  clientMutationId: String
+}
+
+type UpdateAnswerPayload {
+  answer: AnswerNode
+  clientMutationId: String
+}
+
+input UpdateClassProfileInput {
+  id: ID!
+  description: String
+  isPrivate: Boolean
+  clientMutationId: String
+}
+
+type UpdateClassProfilePayload {
+  profile: ClassProfileNode
+  clientMutationId: String
+}
+
+input UpdateQuestionInput {
+  id: ID!
+  prompt: String
+  clientMutationId: String
+}
+
+type UpdateQuestionPayload {
+  question: QuestionNode
+  clientMutationId: String
+}
+
+input UpdateQuizInput {
+  id: ID!
+  name: String
+  description: String
+  isPrivate: Boolean
+  clientMutationId: String
+}
+
+type UpdateQuizPayload {
+  quiz: QuizNode
+  clientMutationId: String
+}
+
+input UpdateUserInput {
+  id: ID!
+  username: String
+  profileList: [ID]
+  name: String
+  email: String
+  password: String
+  clientMutationId: String
+}
+
+type UpdateUserPayload {
+  user: UserNode
+  clientMutationId: String
+}
+
+type UserNode implements Node {
+  # The ID of the object.
+  id: ID!
+  lastLogin: DateTime
+  email: String!
+  username: String!
+  name: String!
+  classProfiles(before: String, after: String, first: Int, last: Int, name: String, name_Icontains: String, description_Icontains: String, id: ID): ClassProfileNodeConnection
+}
+
+type UserNodeConnection {
+  pageInfo: PageInfo!
+  edges: [UserNodeEdge]!
+}
+
+type UserNodeEdge {
+  # The item at the end of the edge
+  node: UserNode
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
