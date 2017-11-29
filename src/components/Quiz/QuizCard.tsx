@@ -6,7 +6,7 @@ import { QuizFragment } from '../../graphql/graphql';
 
 export type QuizAction = (quiz: QuizFragment) => void;
 
-export interface QuizCardProps {
+export interface Props {
   // tslint:disable-next-line:no-any
   quiz: QuizFragment;
   style?: React.CSSProperties;
@@ -14,7 +14,7 @@ export interface QuizCardProps {
   onStart?: QuizAction;
   onEdit?: QuizAction;
 }
-const QuizCard: React.SFC<QuizCardProps> = (props) => {
+const QuizCard: React.SFC<Props> = (props) => {
     const { style } = props;
     const handleOnClick = (f: QuizAction | undefined) => () => {
       if (f && typeof f === 'function') {
@@ -35,35 +35,6 @@ const QuizCard: React.SFC<QuizCardProps> = (props) => {
         </CardActions>
       </Card>
     );
-};
-
-export interface QuizListProps {
-  className?: string;
-  quizzes: QuizFragment[];
-  onStart?: QuizAction;
-  onEdit?: QuizAction;
-}
-
-export const QuizList: React.SFC<QuizListProps> = (props) => {
-  const handleOnAction = (f: QuizAction | undefined) => (q: QuizFragment) => {
-    if (f && typeof f === 'function') {
-      f(q);
-    }
-  };
-  return (
-  <div className={props.className ? props.className : ''}>
-    {props.quizzes.length === 0 &&
-      <Typography type="headline"> No Quizzes... </Typography>
-    }
-    {props.quizzes.map(q =>
-      <QuizCard
-        style={{margin: '20px'}}
-        quiz={q}
-        key={q.id}
-        onEdit={handleOnAction(props.onEdit)}
-        onStart={handleOnAction(props.onStart)}
-      />)}
-  </div>);
 };
 
 export default QuizCard;
