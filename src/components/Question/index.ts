@@ -1,2 +1,2 @@
-export { default as EditQuestionCard, Question } from './EditQuestion';
-export { default as EditAnswerItem, Answer } from './EditAnswer';
+export { default as EditQuestion } from './EditQuestion';
+export { default as EditAnswer } from './EditAnswer';

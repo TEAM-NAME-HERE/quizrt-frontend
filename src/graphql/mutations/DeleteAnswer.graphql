@@ -1,0 +1,8 @@
+mutation DeleteAnswer($id: ID!) {
+  deleteAnswer(input: {
+    id: $id
+  }) {
+    success
+    clientMutationId
+  }
+}
