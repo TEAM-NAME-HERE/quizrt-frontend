@@ -1,0 +1,12 @@
+#import "../fragments/Question.graphql"
+mutation UpdateQuestion($id: ID!, $prompt: String) {
+  updateQuestion(input: {
+    id: $id,
+    prompt: $prompt
+  }) {
+    question {
+      ...Question
+    }
+    clientMutationId
+  }
+}

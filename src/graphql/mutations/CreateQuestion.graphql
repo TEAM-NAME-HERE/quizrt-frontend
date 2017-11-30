@@ -1,0 +1,12 @@
+#import "../fragments/Question.graphql"
+mutation CreateQuestion($prompt: String!, $quiz: ID!) {
+  createQuestion(input: { questionData: {
+    prompt: $prompt,
+    quiz: $quiz
+  }}) {
+    question {
+      ...Question
+    }
+    clientMutationId
+  }
+}
