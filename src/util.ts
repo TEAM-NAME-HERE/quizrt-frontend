@@ -33,6 +33,19 @@ export const mergeObjects = <T extends {}>(items: T[]) => {
   return items.reduce((p, c) => Object.assign(p, c), {}) as T;
 };
 
+export class DeferredPromise<T> {
+  resolve: (value?: T | PromiseLike<T> | undefined) => void;
+  // tslint:disable-next-line:no-any
+  reject: (reason?: any) => void;
+  promise: Promise<T>;
+  constructor() {
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+}
+
 /**
  * Batches sequential function calls
  * @param time wait time in milliseconds
@@ -40,25 +53,46 @@ export const mergeObjects = <T extends {}>(items: T[]) => {
  * @param merge merge function to use
  * @returns A function that batches calls until timeout
  */
-export const batch = <T>(time: number, cb: ((a: T) => void), merge: ((q: T[]) => T) = mergeObjects) => {
-  const queue: T[] = [];
+// tslint:disable-next-line:no-any
+export const batch = <T, B>(time: number, cb: ((a: T) => Promise<B>), merge: ((q: T[]) => T) = mergeObjects) => {
+  let queue: T[] = [];
+  let promiseQueue: DeferredPromise<B>[] = [];
   let handle: number;
 
-  const start = () => {
-    handle = window.setTimeout(() => {
-      const final = merge(queue);
-      cb(final);
-    },                         time);
+  const resetState = () => {
+    queue = [];
+    promiseQueue = [];
   };
 
+  const start = () => {
+      handle = window.setTimeout(() => {
+        const final = merge(queue);
+        cb(final).then(a => {
+          promiseQueue.forEach(p => p.resolve(a));
+          resetState();
+        }).catch(r => {
+          promiseQueue.forEach(p => p.reject(r));
+          resetState();
+        });
+      },                         time);
+  };
+
+  /**
+   * Batches calls until timeout
+   * @param a The input data
+   * @returns A promise which resolves when callback is called
+   */
   const func = (a: T) => {
     queue.push(a);
+    const promise = new DeferredPromise<B>();
+    promiseQueue.push(promise);
 
     if (handle) {
       clearTimeout(handle);
     }
 
     start();
+    return promise.promise;
   };
 
   return func;

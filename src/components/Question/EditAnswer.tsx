@@ -157,15 +157,14 @@ class EditAnswerItem extends React.Component<AllProps, State> {
   saveAnswer = batch(200, (a: AnswerScalarFragment) => {
     const { data, onCreate } = this.props;
     if (data && data.answer && areEqualObj(data.answer, this.state.answer)) {
-      return;
+      return new Promise<void>((_, reject) => reject('No new data'));
     }
 
     if (isNewItem(this.state.answer.id)) {
-      this.createAnswer(a).then(() => (onCreate || noop)(this.state.answer.id));
+      return this.createAnswer(a).then(() => (onCreate || noop)(this.state.answer.id));
     } else {
-      this.changeAnswer(a);
+      return this.changeAnswer(a);
     }
-
   });
 
   handleBlur = () => {

@@ -169,13 +169,13 @@ class EditQuestion extends React.Component<AllProps, State> {
   saveQuestion = batch(200, (q: QuestionScalarFragment) => {
     const { data, onCreate } = this.props;
     if (data && data.question && areEqualObj(data.question, q)) {
-      return;
+      return new Promise<void>((_, reject) => reject('No new data'));
     }
 
     if (isNewItem(this.state.question.id)) {
-      this.createQuestion(q).then(() => (onCreate || noop)(this.state.question.id));
+      return this.createQuestion(q).then(() => (onCreate || noop)(this.state.question.id));
     } else {
-      this.changeQuestion(q);
+      return this.changeQuestion(q);
     }
   });
 
