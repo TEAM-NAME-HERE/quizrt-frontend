@@ -1,0 +1,13 @@
+query Question($id: ID!) {
+  question(id: $id) {
+    id
+    prompt
+    answerSet {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+}
