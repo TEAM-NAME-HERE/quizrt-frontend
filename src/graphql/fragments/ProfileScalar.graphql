@@ -1,0 +1,6 @@
+fragment ProfileScalar on ClassProfileNode {
+  id
+  name
+  description
+  isPrivate
+}

@@ -1,12 +1,12 @@
-#import "../fragments/Profile.graphql"
-#import "../fragments/Quiz.graphql"
+#import "../fragments/ProfileScalar.graphql"
+#import "../fragments/QuizScalar.graphql"
 query ProfileWithQuizzes($id: ID!) {
   profile(id: $id) {
-    ...Profile
+    ...ProfileScalar
     quizSet {
       edges {
         node {
-          ...Quiz
+          ...QuizScalar
         }
       }
     }

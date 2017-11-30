@@ -1,0 +1,13 @@
+#import "../fragments/QuizScalar.graphql"
+query Quiz($id: ID!) {
+  quiz(id: $id) {
+    ...QuizScalar
+    questionSet {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+}

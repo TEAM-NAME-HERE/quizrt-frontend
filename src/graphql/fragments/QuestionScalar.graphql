@@ -1,0 +1,4 @@
+fragment QuestionScalar on QuestionNode {
+  id
+  prompt
+}

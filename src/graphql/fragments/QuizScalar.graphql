@@ -1,4 +1,4 @@
-fragment Profile on ClassProfileNode {
+fragment QuizScalar on QuizNode {
   id
   name
   description

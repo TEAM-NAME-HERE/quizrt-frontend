@@ -1,4 +1,4 @@
-#import "../fragments/Answer.graphql"
+#import "../fragments/AnswerScalar.graphql"
 mutation CreateAnswer($description: String!, $question: ID!, $isCorrect: Boolean!) {
   createAnswer(input: {answerData: {
     description: $description,
@@ -6,7 +6,7 @@ mutation CreateAnswer($description: String!, $question: ID!, $isCorrect: Boolean
     isCorrect: $isCorrect
   }}) {
     answer {
-      ...Answer
+      ...AnswerScalar
     }
     clientMutationId
   }

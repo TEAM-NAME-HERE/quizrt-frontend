@@ -4,24 +4,27 @@ import TextField from 'material-ui/TextField';
 import Card, { CardActions, CardContent, CardHeader } from 'material-ui/Card';
 import Typography from 'material-ui/Typography';
 import EditAnswerItem from './EditAnswer';
-import { CreateQuestionMutation, QuestionFragment,
+import { CreateQuestionMutation, QuestionScalarFragment,
          UpdateQuestionMutation, DeleteQuestionMutation, QuestionQuery } from '../../graphql/graphql';
 import { graphql, compose, ChildProps } from 'react-apollo';
-import { areEqualObj, batch, isNewItem } from '../../util';
+import { areEqualObj, batch, isNewItem, noop } from '../../util';
 import { Loading, Error } from '../Display';
+
+type DeleteCallback = (id: string, success: boolean) => void;
 
 export interface Props {
   question?: string;
   quiz: string;
-  onDelete: (id: string, success: boolean) => void;
+  onDelete?: DeleteCallback;
+  onCreate?: (id: string) => void;
   style?: React.CSSProperties;
   className?: string;
 }
 
 interface MutateProps {
-  createQuestion: (question: QuestionFragment, quiz: string) => Promise<QuestionFragment>;
-  changeQuestion: (question: QuestionFragment) => Promise<QuestionFragment>;
-  deleteQuestion: (id: string, callback: ((id: string, success: boolean) => void)) => Promise<void>;
+  createQuestion: (question: QuestionScalarFragment, quiz: string) => Promise<QuestionScalarFragment>;
+  changeQuestion: (question: QuestionScalarFragment) => Promise<QuestionScalarFragment>;
+  deleteQuestion: (id: string, callback: DeleteCallback) => Promise<void>;
 }
 
 const CREATE_MUTATION = require('../../graphql/mutations/CreateQuestion.graphql');
@@ -32,6 +35,27 @@ const createMutation = graphql<CreateQuestionMutation, MutateProps & Props>(CREA
         variables: {
           prompt: question.prompt,
           quiz
+        },
+        optimisticResponse: {
+          createQuestion: {
+            __typename: 'CreateQuestionPayload',
+            question: {
+              ...question
+            },
+            clientMutationId: null
+          }
+        } as CreateQuestionMutation,
+        update: (proxy, { data }) => {
+          if (data && data.createQuestion && data.createQuestion.question && data.createQuestion.question.id !== '') {
+            proxy.writeQuery({ query: QUESTION_QUERY, data: {
+              answerSet: {
+                edges: []
+              },
+              ...data.createQuestion
+             }, variables: {
+               id: data.createQuestion.question.id
+             }});
+          }
         }
       });
 
@@ -73,7 +97,7 @@ const deleteMutation = graphql<DeleteQuestionMutation, MutateProps & Props>(DELE
 
 const QUESTION_QUERY = require('../../graphql/queries/Question.graphql');
 const withQuestion = graphql<QuestionQuery, Props>(QUESTION_QUERY, {
-  skip: (props: Props) => !props.question || props.question === '' || props.question.indexOf('new:') >= 0,
+  skip: (props: Props) => !props.question || isNewItem(props.question),
   options: (props) => ({
     variables: { id: props.question }
   })
@@ -82,7 +106,7 @@ const withQuestion = graphql<QuestionQuery, Props>(QUESTION_QUERY, {
 type AllProps = ChildProps<Props, QuestionQuery> & MutateProps;
 
 interface State {
-  question: QuestionFragment;
+  question: QuestionScalarFragment;
   answers: string[];
 }
 
@@ -90,7 +114,7 @@ const emptyQuestion = {
   id: '',
   prompt: '',
   __typename: 'QuestionNode'
-} as QuestionFragment;
+} as QuestionScalarFragment;
 
 class EditQuestionCard extends React.Component<AllProps, State> {
   private counter: number;
@@ -105,8 +129,7 @@ class EditQuestionCard extends React.Component<AllProps, State> {
   componentWillReceiveProps(nextProps: AllProps) {
     if (nextProps.data && nextProps.data.question) {
       const data = nextProps.data.question;
-      const same = areEqualObj(data, this.state.question);
-      if (!same) {
+      if (!areEqualObj(data, this.state.question)) {
         const answers = data.answerSet
         && data.answerSet.edges.map(e => e && e.node && e.node.id || '');
         this.setState({ question: data, answers: answers || [] });
@@ -114,7 +137,7 @@ class EditQuestionCard extends React.Component<AllProps, State> {
     }
   }
 
-  createQuestion = async (q: QuestionFragment) => {
+  createQuestion = async (q: QuestionScalarFragment) => {
     const { createQuestion, quiz } = this.props;
     const data = await createQuestion(q, quiz);
     this.setState({
@@ -122,7 +145,7 @@ class EditQuestionCard extends React.Component<AllProps, State> {
     });
   }
 
-  changeQuestion = async (q: QuestionFragment) => {
+  changeQuestion = async (q: QuestionScalarFragment) => {
     const { changeQuestion } = this.props;
     await changeQuestion(q);
   }
@@ -138,14 +161,14 @@ class EditQuestionCard extends React.Component<AllProps, State> {
   }
 
   // tslint:disable-next-line:member-ordering
-  saveQuestion = batch(200, (q: QuestionFragment) => {
-    const { data } = this.props;
+  saveQuestion = batch(200, (q: QuestionScalarFragment) => {
+    const { data, onCreate } = this.props;
     if (data && data.question && areEqualObj(data.question, q)) {
       return;
     }
 
     if (isNewItem(this.state.question.id)) {
-      this.createQuestion(q);
+      this.createQuestion(q).then(() => (onCreate || noop)(this.state.question.id));
     } else {
       this.changeQuestion(q);
     }
@@ -245,7 +268,7 @@ class EditQuestionCard extends React.Component<AllProps, State> {
         <CardActions>
           <Button
             color="contrast"
-            onClick={() => deleteQuestion(question.id, onDelete)}
+            onClick={() => deleteQuestion(question.id, onDelete || noop)}
           > Delete
           </Button>
         </CardActions>

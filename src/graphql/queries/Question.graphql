@@ -1,7 +1,7 @@
+#import "../fragments/QuestionScalar.graphql"
 query Question($id: ID!) {
   question(id: $id) {
-    id
-    prompt
+    ...QuestionScalar
     answerSet {
       edges {
         node {

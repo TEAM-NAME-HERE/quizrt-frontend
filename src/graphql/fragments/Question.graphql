@@ -1,4 +1,0 @@
-fragment Question on QuestionNode {
-  id
-  prompt
-}

@@ -1,17 +1,17 @@
 import * as React from 'react';
-import { QuizFragment } from '../../graphql/graphql';
+import { QuizScalarFragment } from '../../graphql/graphql';
 import QuizCard, { QuizAction } from './QuizCard';
 import Typography from 'material-ui/Typography';
 
 export interface Props {
   className?: string;
-  quizzes: QuizFragment[];
+  quizzes: QuizScalarFragment[];
   onStart?: QuizAction;
   onEdit?: QuizAction;
 }
 
 const QuizList: React.SFC<Props> = (props) => {
-  const handleOnAction = (f: QuizAction | undefined) => (q: QuizFragment) => {
+  const handleOnAction = (f: QuizAction | undefined) => (q: QuizScalarFragment) => {
     if (f && typeof f === 'function') {
       f(q);
     }

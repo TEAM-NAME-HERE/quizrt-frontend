@@ -1,0 +1,6 @@
+fragment UserScalar on UserNode {
+  username
+  email
+  name
+  id
+}

@@ -1,5 +1,0 @@
-fragment Answer on AnswerNode {
-  id
-  description
-  isCorrect
-}

@@ -2,13 +2,13 @@ import * as React from 'react';
 import Card, { CardActions, CardContent, CardHeader } from 'material-ui/Card';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import { QuizFragment } from '../../graphql/graphql';
+import { QuizScalarFragment } from '../../graphql/graphql';
 
-export type QuizAction = (quiz: QuizFragment) => void;
+export type QuizAction = (quiz: QuizScalarFragment) => void;
 
 export interface Props {
   // tslint:disable-next-line:no-any
-  quiz: QuizFragment;
+  quiz: QuizScalarFragment;
   style?: React.CSSProperties;
   // tslint:disable-next-line:no-any
   onStart?: QuizAction;

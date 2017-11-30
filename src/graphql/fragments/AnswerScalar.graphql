@@ -1,0 +1,5 @@
+fragment AnswerScalar on AnswerNode {
+  id
+  description
+  isCorrect
+}
