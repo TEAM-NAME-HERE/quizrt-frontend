@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { QuizList, EditQuiz } from '../components/Quiz';
+import { EditQuiz, QuizContainer } from '../components/Quiz';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import { MenuItem } from 'material-ui/Menu';
 import Input, { InputLabel } from 'material-ui/Input';
@@ -7,44 +7,16 @@ import { FormControl } from 'material-ui/Form';
 import Select from 'material-ui/Select';
 import Typography from 'material-ui/Typography';
 import { withStyles, WithStyles } from 'material-ui/styles';
-import { ProfileWithQuizzesQuery, UserWithProfilesQuery, QuizFragment } from '../graphql/graphql';
+import { UserWithProfilesQuery } from '../graphql/graphql';
 import { graphql, ChildProps } from 'react-apollo';
 import { State } from '../reducers/index';
 import { connect } from 'react-redux';
 import { setTheme } from '../actions/theme';
 import { greenTheme } from '../components/styles/theme';
 import { store } from '../App';
+import { Loading, Error } from '../components/Display';
 // tslint:disable:no-any
 // tslint:disable:no-console
-
-const PROFILE_W_QUIZZES_QUERY = require('../graphql/queries/ProfileWithQuizzes.graphql');
-
-const withProfile = graphql<ProfileWithQuizzesQuery, {profile: string, className?: string}>(PROFILE_W_QUIZZES_QUERY, {
-  options: (props) => ({
-    variables: { id: props.profile }
-  })
-});
-
-const Loading = () => <Typography type="headline">Loading...</Typography>;
-const Error: React.SFC<{error: any}> = ({error}) => (
-  <div>
-    <Typography type="headline">Error</Typography>
-    <pre>{JSON.stringify(error)}</pre>
-  </div>);
-
-const QuizContainer = withProfile(({ data, className }) => {
-  if (data) {
-    if (data.loading) { return <Loading />; }
-    if (data.error) { return <Error error={data.error} />; }
-    if (data.profile && data.profile.quizSet) {
-      const quizzes = data.profile.quizSet.edges.map(
-        e => e && e.node
-      );
-      return <QuizList className={className} quizzes={quizzes as QuizFragment[]} />;
-    }
-  }
-  return <div>No Data</div>;
-});
 
 const decorate = withStyles(({palette, breakpoints}) => ({
   container: {
@@ -168,7 +140,7 @@ class Home extends React.Component<AllProps, HomeState> {
               {value === 0 &&
                 <EditQuiz
                   className={classes.main}
-                  onSave={q => console.log(q)}
+                  profile={this.state.profile}
                   onDelete={q => console.log(q)}
                 />
               }

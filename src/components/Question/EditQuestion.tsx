@@ -45,14 +45,19 @@ const createMutation = graphql<CreateQuestionMutation, MutateProps & Props>(CREA
             clientMutationId: null
           }
         } as CreateQuestionMutation,
-        update: (proxy, { data }) => {
+        update: (proxy, passed) => {
+          const { data } = passed as { data: CreateQuestionMutation };
           if (data && data.createQuestion && data.createQuestion.question && data.createQuestion.question.id !== '') {
-            proxy.writeQuery({ query: QUESTION_QUERY, data: {
-              answerSet: {
-                edges: []
-              },
-              ...data.createQuestion
-             }, variables: {
+            const newData = {
+              question: {
+                answerSet: {
+                  __typename: 'AnswerNodeConnection',
+                  edges: []
+                },
+                ...data.createQuestion.question
+              }
+            } as QuestionQuery;
+            proxy.writeQuery({ query: QUESTION_QUERY, data: newData, variables: {
                id: data.createQuestion.question.id
              }});
           }
@@ -116,7 +121,7 @@ const emptyQuestion = {
   __typename: 'QuestionNode'
 } as QuestionScalarFragment;
 
-class EditQuestionCard extends React.Component<AllProps, State> {
+class EditQuestion extends React.Component<AllProps, State> {
   private counter: number;
 
   constructor(p: Props & MutateProps) {
@@ -195,11 +200,16 @@ class EditQuestionCard extends React.Component<AllProps, State> {
           }
         };
       });
+    } else {
+      this.setState({
+        answers: this.state.answers.filter(a => a !== id)
+      });
     }
   }
 
-  handleAnswerCreate = (id: string) => {
+  handleAnswerCreate = (oldId: string) => (id: string) => {
     const { data } = this.props;
+    const { answers } = this.state;
     if (data) {
       data.updateQuery((prev: QuestionQuery) => {
         const answerSet = prev.question && prev.question.answerSet;
@@ -216,6 +226,15 @@ class EditQuestionCard extends React.Component<AllProps, State> {
         };
       });
     }
+
+    const idx = answers.indexOf(oldId);
+    if (idx >= 0) {
+      answers.splice(idx, 1, id);
+    }
+
+    this.setState({
+      answers
+    });
   }
 
   addAnswer = () => {
@@ -259,7 +278,7 @@ class EditQuestionCard extends React.Component<AllProps, State> {
               key={a}
               answer={a}
               onDelete={this.handleAnswerDelete}
-              onCreate={this.handleAnswerCreate}
+              onCreate={this.handleAnswerCreate(a)}
               question={question.id}
             />
           ))}
@@ -277,11 +296,9 @@ class EditQuestionCard extends React.Component<AllProps, State> {
   }
 }
 
-const EditQuestion: React.SFC<Props> = compose(
+export default compose(
   withQuestion,
   createMutation,
   updateMutation,
   deleteMutation
-)(EditQuestionCard);
-
-export default EditQuestion;
+)(EditQuestion) as React.ComponentType<Props>;
