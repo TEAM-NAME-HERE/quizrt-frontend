@@ -1,7 +1,6 @@
+#import "../fragments/AnswerScalar.graphql"
 query Answer($id: ID!) {
   answer(id: $id) {
-    id
-    description
-    isCorrect
+    ...AnswerScalar
   }
 }

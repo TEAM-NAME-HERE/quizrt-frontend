@@ -1,0 +1,14 @@
+#import "../fragments/QuizScalar.graphql"
+mutation UpdateQuiz($id: ID!, $name: String, $description: String, $isPrivate: Boolean) {
+  updateQuiz(input: {
+    id: $id,
+    name: $name,
+    description: $description,
+    isPrivate: $isPrivate
+  }) {
+    quiz {
+      ...QuizScalar
+    }
+    clientMutationId
+  }
+}

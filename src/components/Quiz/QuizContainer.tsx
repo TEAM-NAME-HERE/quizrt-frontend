@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ProfileWithQuizzesQuery, QuizFragment } from '../../graphql/graphql';
+import { ProfileWithQuizzesQuery, QuizScalarFragment } from '../../graphql/graphql';
 import QuizList from './QuizList';
 import { Loading, Error } from '../Display';
 import { graphql } from 'react-apollo';
@@ -20,7 +20,7 @@ const QuizContainer = withProfile(({ data, className }) => {
       const quizzes = data.profile.quizSet.edges.map(
         e => e && e.node
       );
-      return <QuizList className={className} quizzes={quizzes as QuizFragment[]} />;
+      return <QuizList className={className} quizzes={quizzes as QuizScalarFragment[]} />;
     }
   }
   return <div>No Data</div>;

@@ -85,6 +85,18 @@ export type DeleteQuestionMutation = {
   } | null,
 };
 
+export type DeleteQuizMutationVariables = {
+  id: string,
+};
+
+export type DeleteQuizMutation = {
+  deleteQuiz:  {
+    __typename: "DeleteQuizPayload",
+    success: boolean | null,
+    clientMutationId: string | null,
+  } | null,
+};
+
 export type LoginUserMutationVariables = {
   email: string,
   password: string,
@@ -171,6 +183,28 @@ export type UpdateQuestionMutation = {
   } | null,
 };
 
+export type UpdateQuizMutationVariables = {
+  id: string,
+  name?: string | null,
+  description?: string | null,
+  isPrivate?: boolean | null,
+};
+
+export type UpdateQuizMutation = {
+  updateQuiz:  {
+    __typename: "UpdateQuizPayload",
+    quiz:  {
+      __typename: "QuizNode",
+      // The ID of the object.
+      id: string,
+      name: string,
+      description: string,
+      isPrivate: boolean,
+    } | null,
+    clientMutationId: string | null,
+  } | null,
+};
+
 export type AnswerQueryVariables = {
   id: string,
 };
@@ -243,6 +277,34 @@ export type QuestionQuery = {
   } | null,
 };
 
+export type QuizQueryVariables = {
+  id: string,
+};
+
+export type QuizQuery = {
+  // The ID of the object
+  quiz:  {
+    __typename: "QuizNode",
+    // The ID of the object.
+    id: string,
+    name: string,
+    description: string,
+    isPrivate: boolean,
+    questionSet:  {
+      __typename: "QuestionNodeConnection",
+      edges:  Array< {
+        __typename: "QuestionNodeEdge",
+        // The item at the end of the edge
+        node:  {
+          __typename: "QuestionNode",
+          // The ID of the object.
+          id: string,
+        } | null,
+      } | null >,
+    } | null,
+  } | null,
+};
+
 export type UserWithProfilesQueryVariables = {
   id: string,
 };
@@ -274,7 +336,7 @@ export type UserWithProfilesQuery = {
   } | null,
 };
 
-export type AnswerFragment = {
+export type AnswerScalarFragment = {
   __typename: "AnswerNode",
   // The ID of the object.
   id: string,
@@ -282,7 +344,7 @@ export type AnswerFragment = {
   isCorrect: boolean,
 };
 
-export type ProfileFragment = {
+export type ProfileScalarFragment = {
   __typename: "ClassProfileNode",
   // The ID of the object.
   id: string,
@@ -291,14 +353,14 @@ export type ProfileFragment = {
   isPrivate: boolean,
 };
 
-export type QuestionFragment = {
+export type QuestionScalarFragment = {
   __typename: "QuestionNode",
   // The ID of the object.
   id: string,
   prompt: string,
 };
 
-export type QuizFragment = {
+export type QuizScalarFragment = {
   __typename: "QuizNode",
   // The ID of the object.
   id: string,
@@ -307,7 +369,7 @@ export type QuizFragment = {
   isPrivate: boolean,
 };
 
-export type UserFragment = {
+export type UserScalarFragment = {
   __typename: "UserNode",
   username: string,
   email: string,

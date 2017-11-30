@@ -1,12 +1,12 @@
-#import "../fragments/User.graphql"
-#import "../fragments/Profile.graphql"
+#import "../fragments/UserScalar.graphql"
+#import "../fragments/ProfileScalar.graphql"
 query UserWithProfiles($id: ID!) {
   user(id: $id) {
-    ...User
+    ...UserScalar
     classProfiles {
       edges {
         node {
-          ...Profile
+          ...ProfileScalar
         }
       }
     }

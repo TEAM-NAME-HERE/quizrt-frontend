@@ -4,14 +4,14 @@ import IconButton from 'material-ui/IconButton';
 import DeleteIcon from 'material-ui-icons/Delete';
 import { FormGroup, FormControlLabel } from 'material-ui/Form';
 import TextField from 'material-ui/TextField';
-import { CreateAnswerMutation, AnswerFragment,
+import { CreateAnswerMutation, AnswerScalarFragment,
          UpdateAnswerMutation, DeleteAnswerMutation, AnswerQuery } from '../../graphql/graphql';
 import { graphql, compose } from 'react-apollo';
 import { ChildProps } from 'react-apollo/types';
 import { Loading, Error } from '../Display';
-import { isNewItem, sleep, batch, areEqualObj, noop } from '../../util';
+import { isNewItem, batch, areEqualObj, noop } from '../../util';
 
-export const emptyAnswer = (id: string): AnswerFragment => ({
+const emptyAnswer = (id: string): AnswerScalarFragment => ({
   id,
   description: '',
   isCorrect: false,
@@ -28,8 +28,8 @@ export interface Props {
 }
 
 interface MutateProps {
-  createAnswer: (answer: AnswerFragment, question: string) => Promise<AnswerFragment>;
-  changeAnswer: (answer: AnswerFragment, question: string) => Promise<AnswerFragment>;
+  createAnswer: (answer: AnswerScalarFragment, question: string) => Promise<AnswerScalarFragment>;
+  changeAnswer: (answer: AnswerScalarFragment, question: string) => Promise<AnswerScalarFragment>;
   deleteAnswer: (id: string, callback: DeleteCallback) => Promise<void>;
 }
 
@@ -109,17 +109,13 @@ const withAnswer = graphql<AnswerQuery, Props>(ANSWER_QUERY, {
 
 type AllProps = ChildProps<Props, AnswerQuery> & MutateProps;
 interface State {
-  answer: AnswerFragment;
+  answer: AnswerScalarFragment;
 }
 
 class EditAnswerItem extends React.Component<AllProps, State> {
-  private created = false;
   constructor(p: Props & MutateProps) {
     super(p);
     this.state = {answer: emptyAnswer('')};
-    if (p.answer && !isNewItem(p.answer)) {
-      this.created = true;
-    }
   }
 
   componentWillReceiveProps(nextProps: AllProps) {
@@ -131,19 +127,14 @@ class EditAnswerItem extends React.Component<AllProps, State> {
     }
   }
 
-  createAnswer = async (a: AnswerFragment) => {
+  createAnswer = async (a: AnswerScalarFragment) => {
     const { createAnswer, question } = this.props;
-    this.created = true;
     const data = await createAnswer(a, question);
     this.setState({answer: data});
   }
 
-  changeAnswer = async (a: AnswerFragment) => {
+  changeAnswer = async (a: AnswerScalarFragment) => {
     const { changeAnswer, question } = this.props;
-    const { answer } = this.state;
-    if (this.created && isNewItem(answer.id) ) {
-      await sleep(500);
-    }
     /*const data =*/
     await changeAnswer(a, question);
     // this.setState(data);
@@ -163,7 +154,7 @@ class EditAnswerItem extends React.Component<AllProps, State> {
   // since the onBlur callback saves the answer, two answers with the
   // same content can be created by hitting the Switch while focus is on the description box
   // tslint:disable-next-line:member-ordering
-  saveAnswer = batch(200, (a: AnswerFragment) => {
+  saveAnswer = batch(200, (a: AnswerScalarFragment) => {
     const { data, onCreate } = this.props;
     if (data && data.answer && areEqualObj(data.answer, this.state.answer)) {
       return;

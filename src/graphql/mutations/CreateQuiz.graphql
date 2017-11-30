@@ -1,0 +1,14 @@
+#import "../fragments/QuizScalar.graphql"
+mutation CreateQuiz($name: String!, $description: String!, $isPrivate: Boolean!, $profile: ID!) {
+  createQuiz(input: { quizData: {
+    name: $name,
+    description: $description,
+    isPrivate: $isPrivate,
+    profile: $profile
+  }}) {
+    quiz {
+      ...QuizScalar
+    }
+    clientMutationId
+  }
+}
