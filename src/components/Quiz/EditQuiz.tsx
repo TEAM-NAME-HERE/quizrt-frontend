@@ -1,10 +1,15 @@
 import * as React from 'react';
-import { EditQuestionCard, Question } from '../Question';
+import { EditQuestion } from '../Question';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import { withStyles, WithStyles } from 'material-ui/styles';
-import OverviewSidebar from '../OverviewSidebar/OverviewSidebar';
+// import OverviewSidebar from '../OverviewSidebar/OverviewSidebar';
 import Typography from 'material-ui/Typography';
+import { QuizScalarFragment, CreateQuizMutation, UpdateQuizMutation,
+         DeleteQuizMutation, QuizQuery } from '../../graphql/graphql';
+import { areEqualObj, isNewItem, batch, noop } from '../../util';
+import { graphql, ChildProps, compose } from 'react-apollo';
+import { Loading, Error } from '../Display';
 
 // tslint:disable:no-console
 const decorate = withStyles(({ palette, spacing, breakpoints }) => ({
@@ -51,22 +56,96 @@ const decorate = withStyles(({ palette, spacing, breakpoints }) => ({
   } as React.CSSProperties
 }));
 
-export interface Quiz {
-  id: string;
-  name: string;
-  description: string;
-  questions: Question[];
-}
+type DeleteCallback = (id: string, success: boolean) => void;
 
-export interface EditQuizProps {
-  initialQuiz?: Quiz;
+export interface Props {
+  quiz?: string;
+  profile: string;
+  onCreate?: (id: string) => void;
+  onDelete?: DeleteCallback;
   style?: React.CSSProperties;
   className?: string;
-  onSave: (q: Quiz) => void;
-  onDelete: (q: Quiz) => void;
 }
 
-type AllProps = EditQuizProps
+interface MutateProps {
+  createQuiz: (quiz: QuizScalarFragment, profile: string) => Promise<QuizScalarFragment>;
+  changeQuiz: (quiz: QuizScalarFragment) => Promise<QuizScalarFragment>;
+  deleteQuiz: (id: string, callback: DeleteCallback) => Promise<void>;
+}
+
+const CREATE_MUTATION = require('../../graphql/mutations/CreateQuiz.graphql');
+const createMutation = graphql<CreateQuizMutation, MutateProps & Props>(CREATE_MUTATION, {
+  props: ({ mutate }) => ({
+    createQuiz: async (quiz, profile) => {
+      const results = await mutate!({
+        variables: {
+          name: quiz.name,
+          description: quiz.description,
+          isPrivate: quiz.isPrivate,
+          profile
+        },
+        optimisticResponse: {
+          createQuiz: {
+            __typename: 'CreateQuizPayload',
+            quiz: {
+              questionSet: {
+                edges: []
+              },
+              ...quiz
+            },
+            clientMutationId: null
+          }
+        } as CreateQuizMutation
+      });
+
+      return results.data.createQuiz && results.data.createQuiz.quiz;
+    }
+  } as Partial<MutateProps & Props>)
+});
+
+const UPDATE_MUTATION = require('../../graphql/mutations/UpdateQuiz.graphql');
+const updateMutation = graphql<UpdateQuizMutation, MutateProps & Props>(UPDATE_MUTATION, {
+  props: ({ mutate }) => ({
+    changeQuiz: async (quiz) => {
+      const results = await mutate!({
+        variables: {
+          id: quiz.id,
+          name: quiz.name,
+          description: quiz.description,
+          isPrivate: quiz.isPrivate
+        }
+      });
+
+      return results.data.updateQuiz && results.data.updateQuiz.quiz;
+    }
+  } as Partial<MutateProps & Props>)
+});
+
+const DELETE_MUTATION = require('../../graphql/mutations/DeleteQuiz.graphql');
+const deleteMutation = graphql<DeleteQuizMutation, MutateProps & Props>(DELETE_MUTATION, {
+  props: ({ mutate }) => ({
+    deleteQuiz: async (id, cb) => {
+      const results = await mutate!({
+        variables: {
+          id
+        }
+      });
+
+      cb(id, !!(results.data.deleteQuiz && results.data.deleteQuiz.success));
+    }
+  } as Partial<MutateProps & Props>)
+});
+
+const QUIZ_QUERY = require('../../graphql/queries/Quiz.graphql');
+const withQuiz = graphql<QuizQuery, Props>(QUIZ_QUERY, {
+  skip: (props: Props) => !props.quiz || isNewItem(props.quiz),
+  options: (props) => ({
+    variables: { id: props.quiz }
+  })
+});
+
+type AllProps = ChildProps<Props, QuizQuery>
+              & MutateProps
               & WithStyles<'container'>
               & WithStyles<'quizzes'>
               & WithStyles<'outerGrid'>
@@ -75,118 +154,216 @@ type AllProps = EditQuizProps
               & WithStyles<'sidebar'>
               & WithStyles<'innerGrid'>;
 
-const emptyQuestion = (id: string): Question => ({
-  id,
-  prompt: '',
+interface State {
+  quiz: QuizScalarFragment;
+  questions: string[];
+}
+
+const emptyQuiz = {
+  id: '',
   name: '',
-  answers: [],
-});
+  description: '',
+  isPrivate: false,
+  __typename: 'QuizNode'
+} as QuizScalarFragment;
 
-class EditQuiz extends React.Component<AllProps, Quiz> {
-  static defaultProps = {
-    initialQuiz: {
-      id: '',
-      name: '',
-      description: '',
-      questions: []
-    }
-  };
-
+class EditQuiz extends React.Component<AllProps, State> {
   private counter: number;
 
   constructor(p: AllProps) {
     super(p);
     this.counter = 0;
 
-    this.state = this.props.initialQuiz as Quiz;
+    this.state = { quiz: emptyQuiz, questions: []};
   }
 
-  addQuestion = () => {
-    const questions = this.state.questions;
-    const id = 'new:' + this.counter++;
+  componentWillReceiveProps(nextProps: AllProps) {
+    if (nextProps.data && nextProps.data.quiz) {
+      const data = nextProps.data.quiz;
+      if (!areEqualObj(data, this.state.quiz)) {
+        const questions = data.questionSet
+        && data.questionSet.edges.map(e => e && e.node && e.node.id || '');
+        this.setState({ quiz: data, questions: questions || []});
+      }
+    }
+  }
+
+  createQuiz = async (q: QuizScalarFragment) => {
+    const { createQuiz, profile } = this.props;
+    const data = await createQuiz(q, profile);
     this.setState({
-      questions: [...questions, emptyQuestion(id.toString())]
+      quiz: data
     });
   }
 
-  handleQuestionDelete = (qs: Question) => {
-    const questions = this.state.questions.filter(q => q.id !== qs.id);
-    this.setState({
-      questions
-    });
-  }
-
-  handleQuestionChange = (qs: Question) => {
-    const questions = this.state.questions.map(q => q.id === qs.id ? qs : q);
-    this.setState({
-      questions
-    });
+  changeQuiz = async (q: QuizScalarFragment) => {
+    const { changeQuiz } = this.props;
+    await changeQuiz(q);
   }
 
   handleChange = (name: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    this.setState((s, p) => ({
-      ...s,
-      [name]: value
-    }));
+    this.setState({
+      quiz: {
+        ...this.state.quiz,
+        [name]: value
+      }
+    });
+  }
+
+  // tslint:disable-next-line:member-ordering
+  saveQuiz = batch(200, (q: QuizScalarFragment) => {
+    const { data, onCreate } = this.props;
+    if (data && data.quiz && areEqualObj(data.quiz, q)) {
+      return;
+    }
+
+    if (isNewItem(this.state.quiz.id)) {
+      this.createQuiz(q).then(() => (onCreate || noop)(this.state.quiz.id));
+    } else {
+      this.changeQuiz(q);
+    }
+  });
+
+  handleBlur = () => {
+    this.saveQuiz(this.state.quiz);
+  }
+
+  handleQuestionDelete = (id: string, success: boolean) => {
+    const { data } = this.props;
+    if (data) {
+      data.updateQuery((prev: QuizQuery) => {
+        const questionSet = prev.quiz && prev.quiz.questionSet;
+        const edges = questionSet && questionSet.edges || [];
+        return {
+          ...prev,
+          quiz: {
+            ...prev.quiz,
+            questionSet: {
+              ...questionSet,
+              edges: edges.filter(e => e && e.node && e.node.id !== id)
+            }
+          }
+        } as QuizQuery;
+      });
+    } else {
+      this.setState({
+        questions: this.state.questions.filter(q => q !== id)
+      });
+    }
+  }
+
+  handleQuestionCreate = (oldId: string) => (id: string) => {
+    const { data } = this.props;
+    const { questions } = this.state;
+    if (data) {
+      data.updateQuery((prev: QuizQuery) => {
+        const questionSet = prev.quiz && prev.quiz.questionSet;
+        const edges = questionSet && questionSet.edges || [];
+        return {
+          ...prev,
+          quiz: {
+            ...prev.quiz,
+            questionSet: {
+              ...questionSet,
+              edges: [...edges, {__typename: 'QuestionNodeEdge', node: { __typename: 'QuestionNode', id}}]
+            }
+          }
+        } as QuizQuery;
+      });
+    }
+
+    const idx = questions.indexOf(oldId);
+    if (idx >= 0) {
+      questions.splice(idx, 1, id);
+    }
+
+    this.setState({
+      questions
+    });
+  }
+
+  doDelete = (id: string, success: boolean) => {
+    if (success) {
+      this.setState({
+        quiz: emptyQuiz,
+        questions: []
+      });
+      (this.props.onDelete || noop)(id, success);
+    }
+  }
+
+  addQuestion = () => {
+    this.saveQuiz(this.state.quiz);
+    const questions = this.state.questions;
+    const id = 'new:' + this.counter++;
+    this.setState({
+      questions: [...questions, id]
+    });
   }
 
   render() {
     // tslint:disable-next-line:no-any
-    const { initialQuiz: { id }} = this.props as any;
-    const { style, className, classes, onDelete, onSave } = this.props;
+    const { quiz: id, style, className, classes, deleteQuiz, data } = this.props;
+    const { quiz } = this.state;
+
+    if (data) {
+      if (data.loading) {
+        return <Loading />;
+      }
+      if (data.error) {
+        return <Error error={data.error} />;
+      }
+    }
+
     return (
       <div
         style={style ? style : {}}
         className={`${classes.container} ${className ? className : ''}`}
       >
         <div className={classes.outerGrid} >
-          <Typography className={classes.quizzes} type="display1">{this.state.name || 'Quiz'}</Typography>
+          <Typography className={classes.quizzes} type="display1">{quiz.name || 'Quiz'}</Typography>
           <Typography className={classes.hideSmall} style={{gridColumn: 'right'}} type="display1">Overview</Typography>
           <div className={classes.quizzes}>
             <div className={classes.innerGrid} >
               <TextField
-                id={`quiz-${id}-name`}
+                id={`quiz-${id || quiz.id}-name`}
                 label="Name"
-                value={this.state.name}
+                value={quiz.name}
                 onChange={this.handleChange('name')}
+                onBlur={this.handleBlur}
                 className={classes.nameField}
                 margin="normal"
               />
               <div style={{ gridColumn: '3', justifySelf: 'end' }}>
-                <Button onClick={() => onSave(this.state)}>Save</Button>
-                <Button
-                  onClick={() => {onDelete(this.state); this.setState(EditQuiz.defaultProps.initialQuiz); }}
-                >
+                <Button disabled={areEqualObj(quiz, emptyQuiz)} onClick={() => deleteQuiz(quiz.id, this.doDelete)}>
                   Delete
                 </Button>
               </div>
               <TextField
-                id={`quiz-${id}-description`}
+                id={`quiz-${id || quiz.id}-description`}
                 label="Description"
-                value={this.state.description}
+                value={quiz.description}
                 onChange={this.handleChange('description')}
+                onBlur={this.handleBlur}
                 multiline={true}
                 style={{gridColumn: '1 / 4'}}
                 margin="normal"
               />
             </div>
             {this.state.questions.map(q => (
-              <EditQuestionCard
-                key={q.id}
-                initialQuestion={q}
+              <EditQuestion
+                key={q}
+                question={q}
                 onDelete={this.handleQuestionDelete}
-                onChange={this.handleQuestionChange}
+                onCreate={this.handleQuestionCreate(q)}
+                quiz={quiz.id}
               />
             ))}
             <Button raised={true} onClick={this.addQuestion}>Add Question</Button>
           </div>
           <div className={classes.hideSmall} style={{gridColumn: 'right'}}>
-            <OverviewSidebar
-              className={classes.sidebar}
-              items={this.state.questions}
-              onChange={i => this.setState({...this.state, questions: i as Question[]})}
-            />
+            Sidebar
           </div>
         </div>
       </div>
@@ -194,4 +371,10 @@ class EditQuiz extends React.Component<AllProps, Quiz> {
   }
 }
 
-export default decorate<EditQuizProps>(EditQuiz);
+export default compose(
+  withQuiz,
+  createMutation,
+  updateMutation,
+  deleteMutation,
+  decorate
+)(EditQuiz) as React.ComponentType<Props>;
