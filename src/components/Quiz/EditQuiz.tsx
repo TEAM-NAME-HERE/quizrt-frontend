@@ -216,7 +216,7 @@ class EditQuiz extends React.Component<AllProps, State> {
   saveQuiz = batch(200, (q: QuizScalarFragment) => {
     const { data, onCreate } = this.props;
     if (data && data.quiz && areEqualObj(data.quiz, q)) {
-      return new Promise<void>((_, reject) => reject('No new data'));
+      return new Promise<void>((resolve, _) => resolve());
     }
 
     if (isNewItem(this.state.quiz.id)) {

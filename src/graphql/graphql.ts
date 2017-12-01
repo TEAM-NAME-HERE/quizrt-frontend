@@ -26,6 +26,7 @@ export type CreateQuestionMutationVariables = {
   name: string,
   quiz: string,
   duration?: number | null,
+  order?: number | null,
 };
 
 export type CreateQuestionMutation = {
@@ -173,6 +174,9 @@ export type UpdateAnswerMutation = {
 export type UpdateQuestionMutationVariables = {
   id: string,
   prompt?: string | null,
+  name?: string | null,
+  order?: number | null,
+  duration?: number | null,
 };
 
 export type UpdateQuestionMutation = {
