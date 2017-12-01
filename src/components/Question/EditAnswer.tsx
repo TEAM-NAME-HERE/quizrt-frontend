@@ -8,7 +8,7 @@ import { CreateAnswerMutation, AnswerScalarFragment,
          UpdateAnswerMutation, DeleteAnswerMutation, AnswerQuery } from '../../graphql/graphql';
 import { graphql, compose } from 'react-apollo';
 import { ChildProps } from 'react-apollo/types';
-import { Loading, Error } from '../Display';
+import { Loading, Error } from '../Messages';
 import { isNewItem, batch, areEqualObj, noop } from '../../util';
 
 const emptyAnswer = (id: string): AnswerScalarFragment => ({

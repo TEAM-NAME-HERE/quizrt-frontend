@@ -8,7 +8,7 @@ import { CreateQuestionMutation, QuestionScalarFragment,
          UpdateQuestionMutation, DeleteQuestionMutation, QuestionQuery } from '../../graphql/graphql';
 import { graphql, compose, ChildProps } from 'react-apollo';
 import { areEqualObj, batch, isNewItem, noop } from '../../util';
-import { Loading, Error } from '../Display';
+import { Loading, Error } from '../Messages';
 
 type DeleteCallback = (id: string, success: boolean) => void;
 

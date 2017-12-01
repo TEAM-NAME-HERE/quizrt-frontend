@@ -9,7 +9,7 @@ import { QuizScalarFragment, CreateQuizMutation, UpdateQuizMutation,
          DeleteQuizMutation, QuizQuery } from '../../graphql/graphql';
 import { areEqualObj, isNewItem, batch, noop } from '../../util';
 import { graphql, ChildProps, compose } from 'react-apollo';
-import { Loading, Error } from '../Display';
+import { Loading, Error } from '../Messages';
 
 // tslint:disable:no-console
 const decorate = withStyles(({ palette, spacing, breakpoints }) => ({

@@ -14,7 +14,7 @@ import { connect } from 'react-redux';
 import { setTheme } from '../actions/theme';
 import { greenTheme } from '../components/styles/theme';
 import { store } from '../App';
-import { Loading, Error } from '../components/Display';
+import { Loading, Error } from '../components/Messages';
 // tslint:disable:no-any
 // tslint:disable:no-console
 

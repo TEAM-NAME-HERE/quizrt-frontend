@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ProfileWithQuizzesQuery, QuizScalarFragment } from '../../graphql/graphql';
 import QuizList from './QuizList';
-import { Loading, Error } from '../Display';
+import { Loading, Error } from '../Messages';
 import { graphql } from 'react-apollo';
 
 const PROFILE_W_QUIZZES_QUERY = require('../../graphql/queries/ProfileWithQuizzes.graphql');
