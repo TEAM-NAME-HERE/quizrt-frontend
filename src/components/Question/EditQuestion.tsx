@@ -34,6 +34,9 @@ const createMutation = graphql<CreateQuestionMutation, MutateProps & Props>(CREA
       const results = await mutate!({
         variables: {
           prompt: question.prompt,
+          name: question.name,
+          orderNumber: question.orderNumber,
+          duration: question.questionDuration,
           quiz
         },
         optimisticResponse: {
@@ -125,6 +128,9 @@ interface State {
 const emptyQuestion = {
   id: '',
   prompt: '',
+  name: '',
+  questionDuration: 30,
+  orderNumber: 0,
   __typename: 'QuestionNode'
 } as QuestionScalarFragment;
 
@@ -272,6 +278,15 @@ class EditQuestion extends React.Component<AllProps, State> {
       <Card style={style ? style : {width: '100%'}}>
         <CardHeader title={`Question ${question.id || id}`} />
         <CardContent>
+          <TextField
+            id={`question-${question.id || id}-name`}
+            label="Name"
+            multiline={true}
+            value={question.name}
+            onChange={this.handleChange('name')}
+            onBlur={this.handleBlur}
+            margin="normal"
+          />
           <TextField
             id={`question-${question.id || id}-prompt`}
             label="Prompt"

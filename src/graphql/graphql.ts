@@ -23,7 +23,9 @@ export type CreateAnswerMutation = {
 
 export type CreateQuestionMutationVariables = {
   prompt: string,
+  name: string,
   quiz: string,
+  duration?: number | null,
 };
 
 export type CreateQuestionMutation = {
@@ -34,6 +36,9 @@ export type CreateQuestionMutation = {
       // The ID of the object.
       id: string,
       prompt: string,
+      name: string,
+      orderNumber: number,
+      questionDuration: number,
     } | null,
     clientMutationId: string | null,
   } | null,
@@ -42,7 +47,7 @@ export type CreateQuestionMutation = {
 export type CreateQuizMutationVariables = {
   name: string,
   description: string,
-  isPrivate: boolean,
+  isPrivate?: boolean | null,
   profile: string,
 };
 
@@ -178,6 +183,9 @@ export type UpdateQuestionMutation = {
       // The ID of the object.
       id: string,
       prompt: string,
+      name: string,
+      orderNumber: number,
+      questionDuration: number,
     } | null,
     clientMutationId: string | null,
   } | null,
@@ -262,6 +270,9 @@ export type QuestionQuery = {
     // The ID of the object.
     id: string,
     prompt: string,
+    name: string,
+    orderNumber: number,
+    questionDuration: number,
     answerSet:  {
       __typename: "AnswerNodeConnection",
       edges:  Array< {
@@ -358,6 +369,9 @@ export type QuestionScalarFragment = {
   // The ID of the object.
   id: string,
   prompt: string,
+  name: string,
+  orderNumber: number,
+  questionDuration: number,
 };
 
 export type QuizScalarFragment = {

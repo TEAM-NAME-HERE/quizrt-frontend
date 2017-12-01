@@ -141,7 +141,6 @@ class Home extends React.Component<AllProps, HomeState> {
                 <EditQuiz
                   className={classes.main}
                   profile={this.state.profile}
-                  onDelete={q => console.log(q)}
                 />
               }
               {value === 1 &&
