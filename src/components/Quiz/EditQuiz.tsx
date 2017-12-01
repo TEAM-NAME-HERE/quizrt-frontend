@@ -255,7 +255,7 @@ class EditQuiz extends React.Component<AllProps, State> {
 
   handleQuestionCreate = (oldId: string) => (id: string) => {
     const { data } = this.props;
-    const { questions } = this.state;
+    // const { questions } = this.state;
     if (data) {
       data.updateQuery((prev: QuizQuery) => {
         const questionSet = prev.quiz && prev.quiz.questionSet;
@@ -272,15 +272,22 @@ class EditQuiz extends React.Component<AllProps, State> {
         } as QuizQuery;
       });
     }
+    /* This was causing the EditQuestion component to be
+       unmounted after creation of a question,
+       which caused issues when attempting to add an answer
+       as the question was created
+       (since we can't modify the state of a component no longer rendered)
+       the component appears to still work fine after removal.
+       We won't really know until we have some working tests
+    */
+    // const idx = questions.indexOf(oldId);
+    // if (idx >= 0) {
+    //   questions.splice(idx, 1, id);
+    // }
 
-    const idx = questions.indexOf(oldId);
-    if (idx >= 0) {
-      questions.splice(idx, 1, id);
-    }
-
-    this.setState({
-      questions
-    });
+    // this.setState({
+    //   questions
+    // });
   }
 
   doDelete = (id: string, success: boolean) => {
@@ -294,11 +301,12 @@ class EditQuiz extends React.Component<AllProps, State> {
   }
 
   addQuestion = () => {
-    this.saveQuiz(this.state.quiz);
-    const questions = this.state.questions;
-    const id = 'new:' + this.counter++;
-    this.setState({
-      questions: [...questions, id]
+    this.saveQuiz(this.state.quiz).then(() => {
+      const questions = this.state.questions;
+      const id = 'new:' + this.counter++;
+      this.setState({
+        questions: [...questions, id]
+      });
     });
   }
 

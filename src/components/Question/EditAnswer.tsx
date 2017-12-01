@@ -88,6 +88,13 @@ const DELETE_MUTATION = require('../../graphql/mutations/DeleteAnswer.graphql');
 const deleteMutation = graphql<DeleteAnswerMutation, MutateProps & Props>(DELETE_MUTATION, {
   props: ({ mutate }) => ({
     deleteAnswer: async (id, cb) => {
+      // if the id is a new item, that means it never
+      // got saved, so we don't have to make the network call
+      if (isNewItem(id)) {
+        cb(id, true);
+        return;
+      }
+
       const results = await mutate!({
         variables: {
           id
@@ -225,7 +232,10 @@ class EditAnswerItem extends React.Component<AllProps, State> {
             label="Correct"
           />
         </FormGroup>
-        <IconButton onClick={() => deleteAnswer(answer.id, onDelete || noop)} aria-label="Delete Answer">
+        <IconButton
+          onClick={() => deleteAnswer(answer.id !== '' ? answer.id : String(id), onDelete || noop)}
+          aria-label="Delete Answer"
+        >
           <DeleteIcon />
         </IconButton>
       </div>

@@ -89,6 +89,13 @@ const DELETE_MUTATION = require('../../graphql/mutations/DeleteQuestion.graphql'
 const deleteMutation = graphql<DeleteQuestionMutation, MutateProps & Props>(DELETE_MUTATION, {
   props: ({ mutate }) => ({
     deleteQuestion: async (id, cb) => {
+      // if the id is a new item, that means it never
+      // got saved, so we don't have to make the network call
+      if (isNewItem(id)) {
+        cb(id, true);
+        return;
+      }
+
       const results = await mutate!({
         variables: {
           id
@@ -238,12 +245,14 @@ class EditQuestion extends React.Component<AllProps, State> {
   }
 
   addAnswer = () => {
-    this.saveQuestion(this.state.question);
-    const answers = this.state.answers;
-    const id = 'new:' + this.counter++;
-    this.setState({
-      answers: [...answers, id]
-    });
+    this.saveQuestion(this.state.question).then(() => {
+      const answers = this.state.answers;
+      const id = 'new:' + this.counter++;
+      this.setState({
+        answers: [...answers, id]
+      });
+    // tslint:disable-next-line:no-console
+    }).catch(r => console.log(r));
   }
 
   render() {
@@ -261,10 +270,10 @@ class EditQuestion extends React.Component<AllProps, State> {
 
     return (
       <Card style={style ? style : {width: '100%'}}>
-        <CardHeader title={`Question ${id || question.id}`} />
+        <CardHeader title={`Question ${question.id || id}`} />
         <CardContent>
           <TextField
-            id={`question-${id || question.id}-prompt`}
+            id={`question-${question.id || id}-prompt`}
             label="Prompt"
             multiline={true}
             value={question.prompt}
@@ -287,7 +296,7 @@ class EditQuestion extends React.Component<AllProps, State> {
         <CardActions>
           <Button
             color="contrast"
-            onClick={() => deleteQuestion(question.id, onDelete || noop)}
+            onClick={() => deleteQuestion(question.id !== '' ? question.id : String(id), onDelete || noop)}
           > Delete
           </Button>
         </CardActions>
