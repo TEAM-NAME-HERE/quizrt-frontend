@@ -15,6 +15,7 @@ import { setTheme } from '../actions/theme';
 import { greenTheme } from '../components/styles/theme';
 import { store } from '../App';
 import { Loading, Error } from '../components/Messages';
+import { Helmet } from 'react-helmet';
 // tslint:disable:no-any
 // tslint:disable:no-console
 
@@ -97,6 +98,9 @@ class Home extends React.Component<AllProps, HomeState> {
     const user = data && data.user;
     return (
     <div className={classes.container}>
+      <Helmet>
+        <title>Home</title>
+      </Helmet>
       {loading && <Loading />}
       {error && <Error error={error} />}
       {user &&

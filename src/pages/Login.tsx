@@ -2,6 +2,7 @@ import * as React from 'react';
 import { LoginForm } from '../components';
 import Button, { ButtonProps } from 'material-ui/Button';
 import { withStyles } from 'material-ui/styles';
+import { Helmet } from 'react-helmet';
 // import { css } from 'glamor';
 
 const btnDecorate = withStyles(({ typography }) => ({
@@ -27,6 +28,9 @@ const decorate = withStyles(({ typography, breakpoints }) => ({
 
 const Login = decorate(({ classes }) => (
     <div className={classes.container} >
+      <Helmet>
+        <title>Login</title>
+      </Helmet>
       <LoginForm className={classes.element} style={{width: '600px'}} />
       <BigButton
         className={classes.element}
