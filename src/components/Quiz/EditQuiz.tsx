@@ -10,6 +10,7 @@ import { QuizScalarFragment, CreateQuizMutation, UpdateQuizMutation,
 import { areEqualObj, isNewItem, batch, noop } from '../../util';
 import { graphql, ChildProps, compose } from 'react-apollo';
 import { Loading, Error } from '../Messages';
+import { Helmet } from 'react-helmet';
 
 // tslint:disable:no-console
 const decorate = withStyles(({ palette, spacing, breakpoints }) => ({
@@ -329,6 +330,9 @@ class EditQuiz extends React.Component<AllProps, State> {
         style={style ? style : {}}
         className={`${classes.container} ${className ? className : ''}`}
       >
+        <Helmet>
+          <title>Editing {quiz.name}</title>
+        </Helmet>
         <div className={classes.outerGrid} >
           <Typography className={classes.quizzes} type="display1">{quiz.name || 'Quiz'}</Typography>
           <Typography className={classes.hideSmall} style={{gridColumn: 'right'}} type="display1">Overview</Typography>
