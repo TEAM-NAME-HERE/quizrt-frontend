@@ -47,7 +47,7 @@ const NoMatch = withRouter(({ location }) => (
 
 const mapStateToProps = (state: State) => ({
   theme: state.theme.theme,
-  user: state.user.uuid
+  user: state.user
 });
 
 const withTheme = connect(mapStateToProps);
@@ -65,7 +65,9 @@ const AppBody = withTheme(({ theme, user }) => (
             }}
           >
           <Switch>
-            { user === ''
+            { user.uuid === ''
+            ? <Route exact={true} path="/" component={GuestHome} />
+            : user.isGuest
             ? <Route exact={true} path="/" component={GuestHome} />
             : <Route exact={true} path="/" component={Home} />
             }

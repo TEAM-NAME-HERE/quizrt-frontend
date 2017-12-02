@@ -25,7 +25,7 @@ export const sleep = (ms: number) => {
 };
 
 // tslint:disable-next-line:no-empty no-any
-export const noop = (...args: any[]) => {};
+export const noop = (...args: any[]) => new Promise<any>((resolve) => resolve());
 
 // tslint:disable-next-line:no-any
 export const mergeObjects = <T extends {}>(items: T[]) => {

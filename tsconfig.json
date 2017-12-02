@@ -17,6 +17,7 @@
     "skipLibCheck": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
   "exclude": [
