@@ -232,6 +232,44 @@ export type AnswerQuery = {
   } | null,
 };
 
+export type AnswersQueryVariables = {
+  before?: string | null,
+  after?: string | null,
+  first?: number | null,
+  last?: number | null,
+  question?: string | null,
+};
+
+export type AnswersQuery = {
+  answers:  {
+    __typename: "AnswerNodeConnection",
+    pageInfo:  {
+      __typename: "PageInfo",
+      // When paginating forwards, are there more items?
+      hasNextPage: boolean,
+      // When paginating backwards, are there more items?
+      hasPreviousPage: boolean,
+      // When paginating backwards, the cursor to continue.
+      startCursor: string | null,
+      // When paginating forwards, the cursor to continue.
+      endCursor: string | null,
+    },
+    edges:  Array< {
+      __typename: "AnswerNodeEdge",
+      // The item at the end of the edge
+      node:  {
+        __typename: "AnswerNode",
+        // The ID of the object.
+        id: string,
+        description: string,
+        isCorrect: boolean,
+      } | null,
+      // A cursor for use in pagination
+      cursor: string,
+    } | null >,
+  } | null,
+};
+
 export type ProfileWithQuizzesQueryVariables = {
   id: string,
 };
@@ -320,6 +358,48 @@ export type QuizQuery = {
   } | null,
 };
 
+export type QuizzesQueryVariables = {
+  before?: string | null,
+  after?: string | null,
+  first?: number | null,
+  last?: number | null,
+  name?: string | null,
+  description?: string | null,
+  profile?: string | null,
+  isPrivate?: boolean | null,
+};
+
+export type QuizzesQuery = {
+  quizzes:  {
+    __typename: "QuizNodeConnection",
+    pageInfo:  {
+      __typename: "PageInfo",
+      // When paginating forwards, are there more items?
+      hasNextPage: boolean,
+      // When paginating backwards, are there more items?
+      hasPreviousPage: boolean,
+      // When paginating backwards, the cursor to continue.
+      startCursor: string | null,
+      // When paginating forwards, the cursor to continue.
+      endCursor: string | null,
+    },
+    edges:  Array< {
+      __typename: "QuizNodeEdge",
+      // The item at the end of the edge
+      node:  {
+        __typename: "QuizNode",
+        // The ID of the object.
+        id: string,
+        name: string,
+        description: string,
+        isPrivate: boolean,
+      } | null,
+      // A cursor for use in pagination
+      cursor: string,
+    } | null >,
+  } | null,
+};
+
 export type UserWithProfilesQueryVariables = {
   id: string,
 };
@@ -357,6 +437,18 @@ export type AnswerScalarFragment = {
   id: string,
   description: string,
   isCorrect: boolean,
+};
+
+export type PageInfoFragment = {
+  __typename: "PageInfo",
+  // When paginating forwards, are there more items?
+  hasNextPage: boolean,
+  // When paginating backwards, are there more items?
+  hasPreviousPage: boolean,
+  // When paginating backwards, the cursor to continue.
+  startCursor: string | null,
+  // When paginating forwards, the cursor to continue.
+  endCursor: string | null,
 };
 
 export type ProfileScalarFragment = {

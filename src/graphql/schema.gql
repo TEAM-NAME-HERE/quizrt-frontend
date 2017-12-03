@@ -20,7 +20,7 @@ type AnswerNode implements Node {
   description: String!
   question: QuestionNode!
   isCorrect: Boolean!
-  responseSet(before: String, after: String, first: Int, last: Int, quizSession: ID, user: ID, answer: ID, id: ID): ResponseNodeConnection
+  responseSet(before: String, after: String, first: Int, last: Int, id: ID, user: String, quizSession: ID, answer: ID): ResponseNodeConnection
 }
 
 type AnswerNodeConnection {
@@ -42,8 +42,8 @@ type ClassProfileNode implements Node {
   name: String!
   description: String!
   isPrivate: Boolean!
-  quizSet(before: String, after: String, first: Int, last: Int, name: String, name_Icontains: String, isPrivate: Boolean, id: ID, description_Icontains: String): QuizNodeConnection
-  userSet(before: String, after: String, first: Int, last: Int, username: String, username_Icontains: String, name: String, name_Icontains: String, email: String): UserNodeConnection
+  quizSet(before: String, after: String, first: Int, last: Int, id: ID, description_Icontains: String, name: String, name_Icontains: String, isPrivate: Boolean, classProfile: ID): QuizNodeConnection
+  userSet(before: String, after: String, first: Int, last: Int, email: String, username: String, username_Icontains: String, name: String, name_Icontains: String): UserNodeConnection
 }
 
 type ClassProfileNodeConnection {
@@ -117,7 +117,7 @@ type CreateQuizPayload {
 }
 
 input CreateResponseInput {
-  user: ID!
+  user: String!
   answer: ID!
   quizSession: ID!
   responseDelay: Int
@@ -316,30 +316,31 @@ type Query {
 
   # The ID of the object
   session(id: ID!): SessionNode
-  responses(before: String, after: String, first: Int, last: Int, quizSession: ID, user: ID, answer: ID, id: ID): ResponseNodeConnection
+  userScores: [String]
+  responses(before: String, after: String, first: Int, last: Int, id: ID, user: String, quizSession: ID, answer: ID): ResponseNodeConnection
 
   # The ID of the object
   response(id: ID!): ResponseNode
-  answers(before: String, after: String, first: Int, last: Int, question: ID, isCorrect: Boolean, id: ID, description_Icontains: String): AnswerNodeConnection
+  answers(before: String, after: String, first: Int, last: Int, isCorrect: Boolean, question: ID, description_Icontains: String, id: ID): AnswerNodeConnection
 
   # The ID of the object
   answer(id: ID!): AnswerNode
-  questions(before: String, after: String, first: Int, last: Int, quiz: ID, name: String, name_Icontains: String, prompt: String, prompt_Icontains: String, id: ID): QuestionNodeConnection
+  questions(before: String, after: String, first: Int, last: Int, id: ID, name: String, name_Icontains: String, prompt: String, prompt_Icontains: String, quiz: ID): QuestionNodeConnection
 
   # The ID of the object
   question(id: ID!): QuestionNode
-  quizzes(before: String, after: String, first: Int, last: Int, name: String, name_Icontains: String, isPrivate: Boolean, id: ID, description_Icontains: String): QuizNodeConnection
+  quizzes(before: String, after: String, first: Int, last: Int, id: ID, description_Icontains: String, name: String, name_Icontains: String, isPrivate: Boolean, classProfile: ID): QuizNodeConnection
 
   # The ID of the object
   quiz(id: ID!): QuizNode
-  profiles(before: String, after: String, first: Int, last: Int, name: String, name_Icontains: String, id: ID, description_Icontains: String): ClassProfileNodeConnection
+  profiles(before: String, after: String, first: Int, last: Int, id: ID, description_Icontains: String, name: String, name_Icontains: String): ClassProfileNodeConnection
 
   # The ID of the object
   profile(id: ID!): ClassProfileNode
 
   # The ID of the object
   user(id: ID!): UserNode
-  users(before: String, after: String, first: Int, last: Int, username: String, username_Icontains: String, name: String, name_Icontains: String, email: String): UserNodeConnection
+  users(before: String, after: String, first: Int, last: Int, email: String, username: String, username_Icontains: String, name: String, name_Icontains: String): UserNodeConnection
 }
 
 type QuestionNode implements Node {
@@ -350,8 +351,8 @@ type QuestionNode implements Node {
   name: String!
   orderNumber: Int!
   questionDuration: Int!
+  answerSet(before: String, after: String, first: Int, last: Int, isCorrect: Boolean, question: ID, description_Icontains: String, id: ID): AnswerNodeConnection
   quizsessionSet(before: String, after: String, first: Int, last: Int, owner: ID, quiz: ID, isLocked: Boolean): SessionNodeConnection
-  answerSet(before: String, after: String, first: Int, last: Int, question: ID, isCorrect: Boolean, id: ID, description_Icontains: String): AnswerNodeConnection
 }
 
 type QuestionNodeConnection {
@@ -374,7 +375,7 @@ type QuizNode implements Node {
   description: String!
   isPrivate: Boolean!
   classProfile: ClassProfileNode!
-  questionSet(before: String, after: String, first: Int, last: Int, quiz: ID, name: String, name_Icontains: String, prompt: String, prompt_Icontains: String, id: ID): QuestionNodeConnection
+  questionSet(before: String, after: String, first: Int, last: Int, id: ID, name: String, name_Icontains: String, prompt: String, prompt_Icontains: String, quiz: ID): QuestionNodeConnection
   quizsessionSet(before: String, after: String, first: Int, last: Int, owner: ID, quiz: ID, isLocked: Boolean): SessionNodeConnection
 }
 
@@ -394,7 +395,7 @@ type QuizNodeEdge {
 type ResponseNode implements Node {
   # The ID of the object.
   id: ID!
-  user: UserNode
+  user: String!
   answer: AnswerNode!
   quizSession: SessionNode!
   responseDelay: Int!
@@ -422,7 +423,7 @@ type SessionNode implements Node {
   sessionDate: DateTime!
   currentQuestion: QuestionNode
   displayResults: Boolean!
-  responseSet(before: String, after: String, first: Int, last: Int, quizSession: ID, user: ID, answer: ID, id: ID): ResponseNodeConnection
+  responseSet(before: String, after: String, first: Int, last: Int, id: ID, user: String, quizSession: ID, answer: ID): ResponseNodeConnection
 }
 
 type SessionNodeConnection {
@@ -512,8 +513,7 @@ type UserNode implements Node {
   email: String!
   username: String!
   name: String!
-  classProfiles(before: String, after: String, first: Int, last: Int, name: String, name_Icontains: String, id: ID, description_Icontains: String): ClassProfileNodeConnection
-  responseSet(before: String, after: String, first: Int, last: Int, quizSession: ID, user: ID, answer: ID, id: ID): ResponseNodeConnection
+  classProfiles(before: String, after: String, first: Int, last: Int, id: ID, description_Icontains: String, name: String, name_Icontains: String): ClassProfileNodeConnection
   quizsessionSet(before: String, after: String, first: Int, last: Int, owner: ID, quiz: ID, isLocked: Boolean): SessionNodeConnection
 }
 

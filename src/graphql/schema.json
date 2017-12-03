@@ -125,6 +125,22 @@
               "deprecationReason": null
             },
             {
+              "name": "userScores",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "responses",
               "description": null,
               "args": [
@@ -169,7 +185,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "quizSession",
+                  "name": "id",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -183,13 +199,13 @@
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
-                    "name": "ID",
+                    "name": "String",
                     "ofType": null
                   },
                   "defaultValue": null
                 },
                 {
-                  "name": "answer",
+                  "name": "quizSession",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -199,7 +215,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "id",
+                  "name": "answer",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -289,16 +305,6 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "question",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ID",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
                   "name": "isCorrect",
                   "description": null,
                   "type": {
@@ -309,7 +315,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "id",
+                  "name": "question",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -324,6 +330,16 @@
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "ID",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -409,7 +425,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "quiz",
+                  "name": "id",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -459,7 +475,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "id",
+                  "name": "quiz",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -549,6 +565,26 @@
                   "defaultValue": null
                 },
                 {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "description_Icontains",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "name",
                   "description": null,
                   "type": {
@@ -579,21 +615,11 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "id",
+                  "name": "classProfile",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
                     "name": "ID",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "description_Icontains",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -679,26 +705,6 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "name",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "name_Icontains",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
                   "name": "id",
                   "description": null,
                   "type": {
@@ -710,6 +716,26 @@
                 },
                 {
                   "name": "description_Icontains",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "name",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "name_Icontains",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -826,6 +852,16 @@
                   "defaultValue": null
                 },
                 {
+                  "name": "email",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "username",
                   "description": null,
                   "type": {
@@ -857,16 +893,6 @@
                 },
                 {
                   "name": "name_Icontains",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "email",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -1221,7 +1247,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "quizSession",
+                  "name": "id",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -1235,13 +1261,13 @@
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
-                    "name": "ID",
+                    "name": "String",
                     "ofType": null
                   },
                   "defaultValue": null
                 },
                 {
-                  "name": "answer",
+                  "name": "quizSession",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -1251,7 +1277,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "id",
+                  "name": "answer",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -1480,26 +1506,6 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "name",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "name_Icontains",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
                   "name": "id",
                   "description": null,
                   "type": {
@@ -1518,22 +1524,9 @@
                     "ofType": null
                   },
                   "defaultValue": null
-                }
-              ],
-              "type": {
-                "kind": "OBJECT",
-                "name": "ClassProfileNodeConnection",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "responseSet",
-              "description": null,
-              "args": [
+                },
                 {
-                  "name": "before",
+                  "name": "name",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -1543,71 +1536,11 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "after",
+                  "name": "name_Icontains",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
                     "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "first",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "last",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "quizSession",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ID",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "user",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ID",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "answer",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ID",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "id",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ID",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -1615,7 +1548,7 @@
               ],
               "type": {
                 "kind": "OBJECT",
-                "name": "ResponseNodeConnection",
+                "name": "ClassProfileNodeConnection",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -1926,6 +1859,26 @@
                   "defaultValue": null
                 },
                 {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "description_Icontains",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "name",
                   "description": null,
                   "type": {
@@ -1956,21 +1909,11 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "id",
+                  "name": "classProfile",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
                     "name": "ID",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "description_Icontains",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
                     "ofType": null
                   },
                   "defaultValue": null
@@ -2029,6 +1972,16 @@
                   "defaultValue": null
                 },
                 {
+                  "name": "email",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
                   "name": "username",
                   "description": null,
                   "type": {
@@ -2060,16 +2013,6 @@
                 },
                 {
                   "name": "name_Icontains",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "email",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -2315,7 +2258,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "quiz",
+                  "name": "id",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -2365,7 +2308,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "id",
+                  "name": "quiz",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -2666,6 +2609,99 @@
               "deprecationReason": null
             },
             {
+              "name": "answerSet",
+              "description": null,
+              "args": [
+                {
+                  "name": "before",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "after",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "first",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "last",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "isCorrect",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "question",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "description_Icontains",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "id",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "ID",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "AnswerNodeConnection",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "quizsessionSet",
               "description": null,
               "args": [
@@ -2743,99 +2779,6 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "SessionNodeConnection",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "answerSet",
-              "description": null,
-              "args": [
-                {
-                  "name": "before",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "after",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "first",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "last",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Int",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "question",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ID",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "isCorrect",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "Boolean",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "id",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "ID",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "description_Icontains",
-                  "description": null,
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                }
-              ],
-              "type": {
-                "kind": "OBJECT",
-                "name": "AnswerNodeConnection",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -3063,7 +3006,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "quizSession",
+                  "name": "id",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -3077,13 +3020,13 @@
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
-                    "name": "ID",
+                    "name": "String",
                     "ofType": null
                   },
                   "defaultValue": null
                 },
                 {
-                  "name": "answer",
+                  "name": "quizSession",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -3093,7 +3036,7 @@
                   "defaultValue": null
                 },
                 {
-                  "name": "id",
+                  "name": "answer",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -3235,9 +3178,13 @@
               "description": "",
               "args": [],
               "type": {
-                "kind": "OBJECT",
-                "name": "UserNode",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -4460,7 +4407,7 @@
                 "name": null,
                 "ofType": {
                   "kind": "SCALAR",
-                  "name": "ID",
+                  "name": "String",
                   "ofType": null
                 }
               },

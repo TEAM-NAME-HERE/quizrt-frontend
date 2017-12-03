@@ -1,0 +1,19 @@
+#import "../fragments/PageInfo.graphql"
+#import "../fragments/QuizScalar.graphql"
+query Quizzes($before: String, $after: String, $first: Int,
+              $last: Int, $name: String, $description: String,
+              $profile: ID, $isPrivate: Boolean) {
+  quizzes(before: $before, after: $after, first: $first,
+          last: $last, name_Icontains: $name, description_Icontains: $description,
+          classProfile: $profile, isPrivate: $isPrivate) {
+            pageInfo {
+              ...PageInfo
+            }
+            edges {
+              node {
+                ...QuizScalar
+              }
+              cursor
+            }
+          }
+}
