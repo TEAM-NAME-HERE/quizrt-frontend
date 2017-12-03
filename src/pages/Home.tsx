@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { EditQuiz, QuizContainer } from '../components/Quiz';
+import { EditQuiz, QuizList } from '../components/Quiz';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import { MenuItem } from 'material-ui/Menu';
 import Input, { InputLabel } from 'material-ui/Input';
@@ -16,6 +16,7 @@ import { greenTheme } from '../components/styles/theme';
 import { store } from '../App';
 import { Loading, Error } from '../components/Messages';
 import { Helmet } from 'react-helmet';
+import { RouteComponentProps, withRouter } from 'react-router';
 // tslint:disable:no-any
 // tslint:disable:no-console
 
@@ -57,6 +58,7 @@ const withUser = graphql<UserWithProfilesQuery, HomeProps>(USER_WITH_PROFILES_QU
 type AllProps = WithStyles<'container'>
               & WithStyles<'main'>
               & WithStyles<'tabContainer'>
+              & RouteComponentProps<{}>
               & ChildProps<HomeProps, UserWithProfilesQuery>;
 
 interface HomeState {
@@ -89,8 +91,8 @@ class Home extends React.Component<AllProps, HomeState> {
   }
 
   render() {
-    const { classes } = this.props;
-    const { value } = this.state;
+    const { classes, history } = this.props;
+    const { value, profile } = this.state;
     store.dispatch(setTheme(greenTheme));
     const data = this.props.data;
     const error = data && data.error;
@@ -117,7 +119,7 @@ class Home extends React.Component<AllProps, HomeState> {
               <FormControl style={{minWidth: '100px'}}>
                 <InputLabel htmlFor="class">Class</InputLabel>
                 <Select
-                  value={this.state.profile}
+                  value={profile}
                   onChange={e => this.setState({ ...this.state, profile: e.target.value })}
                   input={<Input id="class" />}
                 >
@@ -130,7 +132,7 @@ class Home extends React.Component<AllProps, HomeState> {
               </FormControl>
             </div>
             <Tabs
-              value={this.state.value}
+              value={value}
               onChange={(e, v) => this.setState({ ...this.state, value: v })}
               indicatorColor="primary"
               textColor="primary"
@@ -144,12 +146,16 @@ class Home extends React.Component<AllProps, HomeState> {
               {value === 0 &&
                 <EditQuiz
                   className={classes.main}
-                  profile={this.state.profile}
+                  profile={profile}
                 />
               }
               {value === 1 &&
                 <div className={classes.tabContainer}>
-                  <QuizContainer profile={this.state.profile} className={classes.main} />
+                  <QuizList
+                    profile={profile}
+                    className={classes.main}
+                    onEdit={q => history.push(`/${profile}/${q.id}/edit`)}
+                  />
                 </div>}
               {value === 2 && null}
             </div>
@@ -160,4 +166,4 @@ class Home extends React.Component<AllProps, HomeState> {
   }
 }
 
-export default connect(mapStateToProps)(withUser(decorate<HomeProps>(Home)));
+export default withRouter(connect(mapStateToProps)(withUser(decorate<HomeProps>(Home))));

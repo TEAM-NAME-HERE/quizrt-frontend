@@ -104,7 +104,11 @@ export const routes = [
     component: (props: RouteComponentProps<{cid: string, qid: string}>) => (
       <div>
         <Button raised={true} onClick={() => props.history.goBack()}>Done</Button>
-        <EditQuiz profile={props.match.params.cid} quiz={props.match.params.qid} />
+        <EditQuiz
+          profile={props.match.params.cid}
+          quiz={props.match.params.qid}
+          onDelete={() => props.history.goBack()}
+        />
       </div>
     )
   },
