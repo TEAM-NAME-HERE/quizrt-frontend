@@ -11,8 +11,11 @@ import { InMemoryCache, NormalizedCacheObject } from 'apollo-cache-inmemory';
 import {
   BrowserRouter as Router,
   Route,
-  Switch
+  Switch,
 } from 'react-router-dom';
+import {
+  RouteComponentProps
+} from 'react-router';
 import { createStore } from 'redux';
 import { Provider, connect } from 'react-redux';
 import { USER_ID } from './constants';
@@ -22,6 +25,9 @@ import { setTheme } from './actions/theme';
 import reducer, { State } from './reducers';
 import 'typeface-roboto';
 import { withRouter } from 'react-router';
+import { EditQuiz } from './components/Quiz';
+import Button from 'material-ui/Button';
+import { Helmet } from 'react-helmet';
 
 export let store = createStore<State>(
   reducer,
@@ -45,18 +51,78 @@ const NoMatch = withRouter(({ location }) => (
   </div>
 ));
 
-const mapStateToProps = (state: State) => ({
+const withTheme = connect((state: State) => ({
   theme: state.theme.theme,
   user: state.user
-});
+}));
 
-const withTheme = connect(mapStateToProps);
+export const routes = [
+  {
+    path: '/about',
+    exact: false,
+    component: About
+  },
+  {
+    path: '/explore',
+    exact: false,
+    component: Explore
+  },
+  {
+    path: '/login',
+    exact: false,
+    component: Login
+  },
+  {
+    path: '/register',
+    exact: false,
+    component: Register
+  },
+  {
+    path: '/classes/:cid/settings',
+    exact: true,
+    component: (props: RouteComponentProps<{cid: string}>) => (
+      <div> Class {props.match.params.cid} Settings </div>
+    )
+  },
+  {
+    path: '/:cid',
+    exact: true,
+    component: (props: RouteComponentProps<{cid: string}>) => (<div>Class {props.match.params.cid} Quizzes</div>)
+  },
+  {
+    path: '/:cid/:qid',
+    exact: true,
+    component: (props: RouteComponentProps<{cid: string, qid: string}>) => (
+    <div>
+      <p> Class {props.match.params.cid}</p>
+      <p> Quiz {props.match.params.qid}</p>
+    </div>)
+  },
+  {
+    path: '/:cid/:qid/edit',
+    exact: true,
+    component: (props: RouteComponentProps<{cid: string, qid: string}>) => (
+      <div>
+        <Button raised={true} onClick={() => props.history.goBack()}>Done</Button>
+        <EditQuiz
+          profile={props.match.params.cid}
+          quiz={props.match.params.qid}
+          onDelete={() => props.history.goBack()}
+        />
+      </div>
+    )
+  },
+
+];
 
 const AppBody = withTheme(({ theme, user }) => (
   <ApolloProvider client={client}>
     <MuiThemeProvider theme={theme}>
       <Router>
       <div className="App">
+        <Helmet>
+          <meta name="theme-color" content={theme.palette.primary[500]} />
+        </Helmet>
           <HeaderContainer />
           <div
             style={{
@@ -71,10 +137,15 @@ const AppBody = withTheme(({ theme, user }) => (
             ? <Route exact={true} path="/" component={GuestHome} />
             : <Route exact={true} path="/" component={Home} />
             }
-            <Route path="/about" component={About} />
-            <Route path="/explore" component={Explore} />
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
+            {
+              routes.map((r, idx) => (
+                <Route
+                  key={idx}
+                  exact={r.exact}
+                  path={r.path}
+                  component={r.component}
+                />))
+            }
             <Route component={NoMatch} />
           </Switch>
           </div>

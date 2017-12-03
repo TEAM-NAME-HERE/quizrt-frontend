@@ -1,9 +1,12 @@
 #import "../fragments/QuestionScalar.graphql"
-mutation CreateQuestion($prompt: String!, $quiz: ID!) {
-  createQuestion(input: { questionData: {
+mutation CreateQuestion($prompt: String!, $name: String!, $quiz: ID!, $duration: Int, $order: Int) {
+  createQuestion(input: {
+    name: $name
     prompt: $prompt,
-    quiz: $quiz
-  }}) {
+    quiz: $quiz,
+    questionDuration: $duration
+    orderNumber: $order
+  }) {
     question {
       ...QuestionScalar
     }

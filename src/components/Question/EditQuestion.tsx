@@ -34,6 +34,9 @@ const createMutation = graphql<CreateQuestionMutation, MutateProps & Props>(CREA
       const results = await mutate!({
         variables: {
           prompt: question.prompt,
+          name: question.name,
+          order: question.orderNumber,
+          duration: question.questionDuration,
           quiz
         },
         optimisticResponse: {
@@ -76,7 +79,10 @@ const updateMutation = graphql<UpdateQuestionMutation, MutateProps & Props>(UPDA
       const results = await mutate!({
         variables: {
           id: question.id,
-          prompt: question.prompt
+          prompt: question.prompt,
+          name: question.name,
+          order: question.orderNumber,
+          duration: question.questionDuration
         }
       });
 
@@ -125,6 +131,9 @@ interface State {
 const emptyQuestion = {
   id: '',
   prompt: '',
+  name: '',
+  questionDuration: 30,
+  orderNumber: 0,
   __typename: 'QuestionNode'
 } as QuestionScalarFragment;
 
@@ -176,7 +185,7 @@ class EditQuestion extends React.Component<AllProps, State> {
   saveQuestion = batch(200, (q: QuestionScalarFragment) => {
     const { data, onCreate } = this.props;
     if (data && data.question && areEqualObj(data.question, q)) {
-      return new Promise<void>((_, reject) => reject('No new data'));
+      return new Promise<void>((resolve, _) => resolve());
     }
 
     if (isNewItem(this.state.question.id)) {
@@ -190,7 +199,7 @@ class EditQuestion extends React.Component<AllProps, State> {
     this.saveQuestion(this.state.question);
   }
 
-  handleAnswerDelete = (id: string) => {
+  handleAnswerDelete = (id: string, success: boolean) => {
     const { data } = this.props;
     if (data) {
       data.updateQuery((prev: QuestionQuery) => {
@@ -216,7 +225,6 @@ class EditQuestion extends React.Component<AllProps, State> {
 
   handleAnswerCreate = (oldId: string) => (id: string) => {
     const { data } = this.props;
-    const { answers } = this.state;
     if (data) {
       data.updateQuery((prev: QuestionQuery) => {
         const answerSet = prev.question && prev.question.answerSet;
@@ -234,14 +242,14 @@ class EditQuestion extends React.Component<AllProps, State> {
       });
     }
 
-    const idx = answers.indexOf(oldId);
-    if (idx >= 0) {
-      answers.splice(idx, 1, id);
-    }
+    // const idx = answers.indexOf(oldId);
+    // if (idx >= 0) {
+    //   answers.splice(idx, 1, id);
+    // }
 
-    this.setState({
-      answers
-    });
+    // this.setState({
+    //   answers
+    // });
   }
 
   addAnswer = () => {
@@ -270,8 +278,17 @@ class EditQuestion extends React.Component<AllProps, State> {
 
     return (
       <Card style={style ? style : {width: '100%'}}>
-        <CardHeader title={`Question ${question.id || id}`} />
+        <CardHeader title={question.name !== '' ? question.name : 'Question'} />
         <CardContent>
+          <div style={{display: 'flex', flexFlow: 'column nowrap'}}>
+          <TextField
+            id={`question-${question.id || id}-name`}
+            label="Name"
+            value={question.name}
+            onChange={this.handleChange('name')}
+            onBlur={this.handleBlur}
+            margin="normal"
+          />
           <TextField
             id={`question-${question.id || id}-prompt`}
             label="Prompt"
@@ -281,6 +298,7 @@ class EditQuestion extends React.Component<AllProps, State> {
             onBlur={this.handleBlur}
             margin="normal"
           />
+          </div>
           <Typography type="title">Answers</Typography>
           {this.state.answers.map(a => (
             <EditAnswerItem

@@ -6,6 +6,7 @@ import { withStyles } from 'material-ui/styles';
 import { store } from '../App';
 import { setTheme } from '../actions/theme';
 import { blueTheme } from '../components/styles/theme';
+import { Helmet } from 'react-helmet';
 
 const decorate = withStyles(({palette, breakpoints}) => ({
   container: {
@@ -47,11 +48,14 @@ const GuestHome = decorate(({ classes }) => {
   store.dispatch(setTheme(blueTheme));
   return (
   <div className={classes.container}>
+    <Helmet>
+      <title>Quizrt</title>
+    </Helmet>
     <div className={classes.textContainer}>
       <Typography className={classes.text} type="display3">Built for Quizzers</Typography>
       <Typography className={classes.text} type="headline" component="p">
         Quizrt is a quiz creation platform inspired by the way you quiz.
-        For open source and schools, you can host and review quizzes, manage classes,
+        For schools and those corny personality surveys, you can host and review quizzes, manage classes,
         and build surveys alongside millions of other people.
       </Typography>
     </div>

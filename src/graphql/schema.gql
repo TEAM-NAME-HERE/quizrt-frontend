@@ -1,3 +1,13 @@
+input AdvanceQuestionInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type AdvanceQuestionPayload {
+  session: SessionNode
+  clientMutationId: String
+}
+
 input AnswerInput {
   description: String!
   question: ID!
@@ -10,6 +20,7 @@ type AnswerNode implements Node {
   description: String!
   question: QuestionNode!
   isCorrect: Boolean!
+  responseSet(before: String, after: String, first: Int, last: Int, id: ID, user: String, quizSession: ID, answer: ID): ResponseNodeConnection
 }
 
 type AnswerNodeConnection {
@@ -31,8 +42,8 @@ type ClassProfileNode implements Node {
   name: String!
   description: String!
   isPrivate: Boolean!
-  userSet(before: String, after: String, first: Int, last: Int, email: String, name: String, name_Icontains: String, username: String, username_Icontains: String): UserNodeConnection
-  quizSet(before: String, after: String, first: Int, last: Int, isPrivate: Boolean, name: String, name_Icontains: String, description_Icontains: String, id: ID): QuizNodeConnection
+  quizSet(before: String, after: String, first: Int, last: Int, id: ID, description_Icontains: String, name: String, name_Icontains: String, isPrivate: Boolean, classProfile: ID): QuizNodeConnection
+  userSet(before: String, after: String, first: Int, last: Int, email: String, username: String, username_Icontains: String, name: String, name_Icontains: String): UserNodeConnection
 }
 
 type ClassProfileNodeConnection {
@@ -46,6 +57,16 @@ type ClassProfileNodeEdge {
 
   # A cursor for use in pagination
   cursor: String!
+}
+
+input CloseSessionInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type CloseSessionPayload {
+  session: SessionNode
+  clientMutationId: String
 }
 
 input CreateAnswerInput {
@@ -69,7 +90,11 @@ type CreateProfilePayload {
 }
 
 input CreateQuestionInput {
-  questionData: QuestionInput!
+  prompt: String!
+  name: String!
+  quiz: ID!
+  orderNumber: Int
+  questionDuration: Int
   clientMutationId: String
 }
 
@@ -79,12 +104,39 @@ type CreateQuestionPayload {
 }
 
 input CreateQuizInput {
-  quizData: QuizInput!
+  name: String!
+  description: String!
+  isPrivate: Boolean
+  profile: ID!
   clientMutationId: String
 }
 
 type CreateQuizPayload {
   quiz: QuizNode
+  clientMutationId: String
+}
+
+input CreateResponseInput {
+  user: String!
+  answer: ID!
+  quizSession: ID!
+  responseDelay: Int
+  clientMutationId: String
+}
+
+type CreateResponsePayload {
+  response: ResponseNode
+  clientMutationId: String
+}
+
+input CreateSessionInput {
+  owner: ID!
+  quiz: ID!
+  clientMutationId: String
+}
+
+type CreateSessionPayload {
+  session: SessionNode
   clientMutationId: String
 }
 
@@ -147,6 +199,26 @@ type DeleteQuizPayload {
   clientMutationId: String
 }
 
+input DeleteResponseInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DeleteResponsePayload {
+  success: Boolean
+  clientMutationId: String
+}
+
+input DeleteSessionInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DeleteSessionPayload {
+  success: Boolean
+  clientMutationId: String
+}
+
 input DeleteUserInput {
   id: ID!
   clientMutationId: String
@@ -154,6 +226,16 @@ input DeleteUserInput {
 
 type DeleteUserPayload {
   success: Boolean
+  clientMutationId: String
+}
+
+input DisplayResultsInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DisplayResultsPayload {
+  session: SessionNode
   clientMutationId: String
 }
 
@@ -177,6 +259,13 @@ type LogoutUserPayload {
 }
 
 type Mutation {
+  createSession(input: CreateSessionInput!): CreateSessionPayload
+  deleteSession(input: DeleteSessionInput!): DeleteSessionPayload
+  closeSession(input: CloseSessionInput!): CloseSessionPayload
+  displayResults(input: DisplayResultsInput!): DisplayResultsPayload
+  advanceQuestion(input: AdvanceQuestionInput!): AdvanceQuestionPayload
+  createResponse(input: CreateResponseInput!): CreateResponsePayload
+  deleteResponse(input: DeleteResponseInput!): DeleteResponsePayload
   createAnswer(input: CreateAnswerInput!): CreateAnswerPayload
   updateAnswer(input: UpdateAnswerInput!): UpdateAnswerPayload
   deleteAnswer(input: DeleteAnswerInput!): DeleteAnswerPayload
@@ -223,31 +312,35 @@ input ProfileInput {
 }
 
 type Query {
-  answers(before: String, after: String, first: Int, last: Int, isCorrect: Boolean, id: ID, description_Icontains: String, question: ID): AnswerNodeConnection
+  sessions(before: String, after: String, first: Int, last: Int, owner: ID, quiz: ID, isLocked: Boolean): SessionNodeConnection
+
+  # The ID of the object
+  session(id: ID!): SessionNode
+  userScores: [String]
+  responses(before: String, after: String, first: Int, last: Int, id: ID, user: String, quizSession: ID, answer: ID): ResponseNodeConnection
+
+  # The ID of the object
+  response(id: ID!): ResponseNode
+  answers(before: String, after: String, first: Int, last: Int, isCorrect: Boolean, question: ID, description_Icontains: String, id: ID): AnswerNodeConnection
 
   # The ID of the object
   answer(id: ID!): AnswerNode
-  questions(before: String, after: String, first: Int, last: Int, prompt: String, id: ID, quiz: ID): QuestionNodeConnection
+  questions(before: String, after: String, first: Int, last: Int, id: ID, name: String, name_Icontains: String, prompt: String, prompt_Icontains: String, quiz: ID): QuestionNodeConnection
 
   # The ID of the object
   question(id: ID!): QuestionNode
-  quizzes(before: String, after: String, first: Int, last: Int, isPrivate: Boolean, name: String, name_Icontains: String, description_Icontains: String, id: ID): QuizNodeConnection
+  quizzes(before: String, after: String, first: Int, last: Int, id: ID, description_Icontains: String, name: String, name_Icontains: String, isPrivate: Boolean, classProfile: ID): QuizNodeConnection
 
   # The ID of the object
   quiz(id: ID!): QuizNode
-  profiles(before: String, after: String, first: Int, last: Int, name: String, name_Icontains: String, description_Icontains: String, id: ID): ClassProfileNodeConnection
+  profiles(before: String, after: String, first: Int, last: Int, id: ID, description_Icontains: String, name: String, name_Icontains: String): ClassProfileNodeConnection
 
   # The ID of the object
   profile(id: ID!): ClassProfileNode
 
   # The ID of the object
   user(id: ID!): UserNode
-  users(before: String, after: String, first: Int, last: Int, email: String, name: String, name_Icontains: String, username: String, username_Icontains: String): UserNodeConnection
-}
-
-input QuestionInput {
-  prompt: String!
-  quiz: ID!
+  users(before: String, after: String, first: Int, last: Int, email: String, username: String, username_Icontains: String, name: String, name_Icontains: String): UserNodeConnection
 }
 
 type QuestionNode implements Node {
@@ -255,7 +348,11 @@ type QuestionNode implements Node {
   id: ID!
   prompt: String!
   quiz: QuizNode!
-  answerSet(before: String, after: String, first: Int, last: Int, isCorrect: Boolean, id: ID, description_Icontains: String, question: ID): AnswerNodeConnection
+  name: String!
+  orderNumber: Int!
+  questionDuration: Int!
+  answerSet(before: String, after: String, first: Int, last: Int, isCorrect: Boolean, question: ID, description_Icontains: String, id: ID): AnswerNodeConnection
+  quizsessionSet(before: String, after: String, first: Int, last: Int, owner: ID, quiz: ID, isLocked: Boolean): SessionNodeConnection
 }
 
 type QuestionNodeConnection {
@@ -271,13 +368,6 @@ type QuestionNodeEdge {
   cursor: String!
 }
 
-input QuizInput {
-  name: String!
-  description: String!
-  isPrivate: Boolean
-  profile: ID!
-}
-
 type QuizNode implements Node {
   # The ID of the object.
   id: ID!
@@ -285,7 +375,8 @@ type QuizNode implements Node {
   description: String!
   isPrivate: Boolean!
   classProfile: ClassProfileNode!
-  questionSet(before: String, after: String, first: Int, last: Int, prompt: String, id: ID, quiz: ID): QuestionNodeConnection
+  questionSet(before: String, after: String, first: Int, last: Int, id: ID, name: String, name_Icontains: String, prompt: String, prompt_Icontains: String, quiz: ID): QuestionNodeConnection
+  quizsessionSet(before: String, after: String, first: Int, last: Int, owner: ID, quiz: ID, isLocked: Boolean): SessionNodeConnection
 }
 
 type QuizNodeConnection {
@@ -296,6 +387,53 @@ type QuizNodeConnection {
 type QuizNodeEdge {
   # The item at the end of the edge
   node: QuizNode
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type ResponseNode implements Node {
+  # The ID of the object.
+  id: ID!
+  user: String!
+  answer: AnswerNode!
+  quizSession: SessionNode!
+  responseDelay: Int!
+}
+
+type ResponseNodeConnection {
+  pageInfo: PageInfo!
+  edges: [ResponseNodeEdge]!
+}
+
+type ResponseNodeEdge {
+  # The item at the end of the edge
+  node: ResponseNode
+
+  # A cursor for use in pagination
+  cursor: String!
+}
+
+type SessionNode implements Node {
+  # The ID of the object.
+  id: ID!
+  owner: UserNode!
+  quiz: QuizNode!
+  isLocked: Boolean!
+  sessionDate: DateTime!
+  currentQuestion: QuestionNode
+  displayResults: Boolean!
+  responseSet(before: String, after: String, first: Int, last: Int, id: ID, user: String, quizSession: ID, answer: ID): ResponseNodeConnection
+}
+
+type SessionNodeConnection {
+  pageInfo: PageInfo!
+  edges: [SessionNodeEdge]!
+}
+
+type SessionNodeEdge {
+  # The item at the end of the edge
+  node: SessionNode
 
   # A cursor for use in pagination
   cursor: String!
@@ -317,6 +455,7 @@ input UpdateClassProfileInput {
   id: ID!
   description: String
   isPrivate: Boolean
+  name: String
   clientMutationId: String
 }
 
@@ -328,6 +467,9 @@ type UpdateClassProfilePayload {
 input UpdateQuestionInput {
   id: ID!
   prompt: String
+  name: String
+  orderNumber: Int
+  questionDuration: Int
   clientMutationId: String
 }
 
@@ -371,7 +513,8 @@ type UserNode implements Node {
   email: String!
   username: String!
   name: String!
-  classProfiles(before: String, after: String, first: Int, last: Int, name: String, name_Icontains: String, description_Icontains: String, id: ID): ClassProfileNodeConnection
+  classProfiles(before: String, after: String, first: Int, last: Int, id: ID, description_Icontains: String, name: String, name_Icontains: String): ClassProfileNodeConnection
+  quizsessionSet(before: String, after: String, first: Int, last: Int, owner: ID, quiz: ID, isLocked: Boolean): SessionNodeConnection
 }
 
 type UserNodeConnection {

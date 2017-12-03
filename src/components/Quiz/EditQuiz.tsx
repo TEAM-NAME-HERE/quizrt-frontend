@@ -6,10 +6,11 @@ import { withStyles, WithStyles } from 'material-ui/styles';
 // import OverviewSidebar from '../OverviewSidebar/OverviewSidebar';
 import Typography from 'material-ui/Typography';
 import { QuizScalarFragment, CreateQuizMutation, UpdateQuizMutation,
-         DeleteQuizMutation, QuizQuery } from '../../graphql/graphql';
+         DeleteQuizMutation, QuizQuery, QuizzesQuery } from '../../graphql/graphql';
 import { areEqualObj, isNewItem, batch, noop } from '../../util';
 import { graphql, ChildProps, compose } from 'react-apollo';
 import { Loading, Error } from '../Messages';
+import { Helmet } from 'react-helmet';
 
 // tslint:disable:no-console
 const decorate = withStyles(({ palette, spacing, breakpoints }) => ({
@@ -68,21 +69,23 @@ export interface Props {
 }
 
 interface MutateProps {
-  createQuiz: (quiz: QuizScalarFragment, profile: string) => Promise<QuizScalarFragment>;
+  createQuiz: (quiz: QuizScalarFragment) => Promise<QuizScalarFragment>;
   changeQuiz: (quiz: QuizScalarFragment) => Promise<QuizScalarFragment>;
   deleteQuiz: (id: string, callback: DeleteCallback) => Promise<void>;
 }
 
+const QUIZZES_QUERY = require('../../graphql/queries/Quizzes.graphql');
+
 const CREATE_MUTATION = require('../../graphql/mutations/CreateQuiz.graphql');
 const createMutation = graphql<CreateQuizMutation, MutateProps & Props>(CREATE_MUTATION, {
-  props: ({ mutate }) => ({
-    createQuiz: async (quiz, profile) => {
+  props: ({ mutate, ownProps }) => ({
+    createQuiz: async (quiz ) => {
       const results = await mutate!({
         variables: {
           name: quiz.name,
           description: quiz.description,
           isPrivate: quiz.isPrivate,
-          profile
+          profile: ownProps.profile
         },
         optimisticResponse: {
           createQuiz: {
@@ -95,7 +98,33 @@ const createMutation = graphql<CreateQuizMutation, MutateProps & Props>(CREATE_M
             },
             clientMutationId: null
           }
-        } as CreateQuizMutation
+        } as CreateQuizMutation,
+        update: (proxy, { data }) => {
+          const { createQuiz } = data as CreateQuizMutation;
+          if (data && createQuiz && createQuiz.quiz && data.createQuiz.quiz.id !== '') {
+            const oldData = proxy.readQuery<QuizzesQuery>({
+              query: QUIZZES_QUERY, variables: { profile: ownProps.profile } });
+            if (!oldData.quizzes) {
+              oldData.quizzes = {
+                __typename: 'QuizNodeConnection',
+                pageInfo: {
+                  __typename: 'PageInfo',
+                  hasNextPage: false,
+                  hasPreviousPage: false,
+                  startCursor: null,
+                  endCursor: null
+                },
+                edges: []
+              };
+            }
+            oldData.quizzes!.edges.push({
+              __typename: 'QuizNodeEdge',
+              node: createQuiz.quiz,
+              cursor: ''
+            });
+            proxy.writeQuery({ query: QUIZZES_QUERY, variables: { profile: ownProps.profile }, data: oldData });
+          }
+        }
       });
 
       return results.data.createQuiz && results.data.createQuiz.quiz;
@@ -113,7 +142,7 @@ const updateMutation = graphql<UpdateQuizMutation, MutateProps & Props>(UPDATE_M
           name: quiz.name,
           description: quiz.description,
           isPrivate: quiz.isPrivate
-        }
+        },
       });
 
       return results.data.updateQuiz && results.data.updateQuiz.quiz;
@@ -123,11 +152,29 @@ const updateMutation = graphql<UpdateQuizMutation, MutateProps & Props>(UPDATE_M
 
 const DELETE_MUTATION = require('../../graphql/mutations/DeleteQuiz.graphql');
 const deleteMutation = graphql<DeleteQuizMutation, MutateProps & Props>(DELETE_MUTATION, {
-  props: ({ mutate }) => ({
+  props: ({ mutate, ownProps }) => ({
     deleteQuiz: async (id, cb) => {
+      if (isNewItem(id)) {
+        cb(id, true);
+        return;
+      }
+
       const results = await mutate!({
         variables: {
           id
+        },
+        update: (proxy, result) => {
+          const { data } = result as { data: DeleteQuizMutation };
+          if (data.deleteQuiz && data.deleteQuiz.success) {
+            const oldData = proxy.readQuery<QuizzesQuery>({
+              query: QUIZZES_QUERY, variables: { profile: ownProps.profile }
+            });
+
+            if (oldData.quizzes) {
+              oldData.quizzes.edges = oldData.quizzes.edges.filter(e => e && e.node && e.node.id !== id);
+              proxy.writeQuery({ query: QUIZZES_QUERY, variables: { profile: ownProps.profile }, data: oldData });
+            }
+          }
         }
       });
 
@@ -189,8 +236,8 @@ class EditQuiz extends React.Component<AllProps, State> {
   }
 
   createQuiz = async (q: QuizScalarFragment) => {
-    const { createQuiz, profile } = this.props;
-    const data = await createQuiz(q, profile);
+    const { createQuiz } = this.props;
+    const data = await createQuiz(q);
     this.setState({
       quiz: data
     });
@@ -215,7 +262,7 @@ class EditQuiz extends React.Component<AllProps, State> {
   saveQuiz = batch(200, (q: QuizScalarFragment) => {
     const { data, onCreate } = this.props;
     if (data && data.quiz && areEqualObj(data.quiz, q)) {
-      return new Promise<void>((_, reject) => reject('No new data'));
+      return new Promise<void>((resolve, _) => resolve());
     }
 
     if (isNewItem(this.state.quiz.id)) {
@@ -329,6 +376,9 @@ class EditQuiz extends React.Component<AllProps, State> {
         style={style ? style : {}}
         className={`${classes.container} ${className ? className : ''}`}
       >
+        <Helmet>
+          <title>Editing {quiz.name}</title>
+        </Helmet>
         <div className={classes.outerGrid} >
           <Typography className={classes.quizzes} type="display1">{quiz.name || 'Quiz'}</Typography>
           <Typography className={classes.hideSmall} style={{gridColumn: 'right'}} type="display1">Overview</Typography>
