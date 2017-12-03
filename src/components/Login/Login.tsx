@@ -184,7 +184,7 @@ const Login = compose(
     } else {
       if (result.data.loginUser.user.id) {
         localStorage.setItem(USER_ID, result.data.loginUser.user.id);
-        await saveUser('VXNlck5vZGU6OA==');
+        await saveUser(result.data.loginUser.user.id);
         history.replace(staticContext && staticContext.from || '/');
       }
     }
