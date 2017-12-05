@@ -180,7 +180,7 @@ const Login = compose(
       error(result.errors[0]);
       return;
     } else if (!result.data.loginUser) {
-      throw 'Unknown server error';
+      throw 'Invalid username or password';
     } else {
       if (result.data.loginUser.user.id) {
         localStorage.setItem(USER_ID, result.data.loginUser.user.id);

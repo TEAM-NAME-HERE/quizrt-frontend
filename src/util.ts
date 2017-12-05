@@ -1,3 +1,5 @@
+import { Diff } from 'react-redux';
+
 export const areEqualObj = <T extends {}>(a: T, b: T) => {
   const aProps = Object.getOwnPropertyNames(a);
   const bProps = Object.getOwnPropertyNames(b);
@@ -97,3 +99,9 @@ export const batch = <T, B>(time: number, cb: ((a: T) => Promise<B>), merge: ((q
 
   return func;
 };
+
+export const notEmpty = <T>(value: T | null | undefined): value is T => {
+  return value !== null || value !== undefined;
+};
+
+export type Overwrite<T, U> = { [P in Diff<keyof T, keyof U>]: T[P] } & U;
