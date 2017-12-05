@@ -1,0 +1,5 @@
+fragment ResponseScalar on ResponseNode {
+  id
+  user
+  responseDelay
+}

@@ -400,6 +400,50 @@ export type QuizzesQuery = {
   } | null,
 };
 
+export type ResponsesQueryVariables = {
+  before?: string | null,
+  after?: string | null,
+  first?: number | null,
+  last?: number | null,
+  session?: string | null,
+};
+
+export type ResponsesQuery = {
+  responses:  {
+    __typename: "ResponseNodeConnection",
+    pageInfo:  {
+      __typename: "PageInfo",
+      // When paginating forwards, are there more items?
+      hasNextPage: boolean,
+      // When paginating backwards, are there more items?
+      hasPreviousPage: boolean,
+      // When paginating backwards, the cursor to continue.
+      startCursor: string | null,
+      // When paginating forwards, the cursor to continue.
+      endCursor: string | null,
+    },
+    edges:  Array< {
+      __typename: "ResponseNodeEdge",
+      // The item at the end of the edge
+      node:  {
+        __typename: "ResponseNode",
+        // The ID of the object.
+        id: string,
+        user: string,
+        responseDelay: number,
+        answer:  {
+          __typename: "AnswerNode",
+          description: string,
+          // The ID of the object.
+          id: string,
+        },
+      } | null,
+      // A cursor for use in pagination
+      cursor: string,
+    } | null >,
+  } | null,
+};
+
 export type UserWithProfilesQueryVariables = {
   id: string,
 };
@@ -477,6 +521,28 @@ export type QuizScalarFragment = {
   name: string,
   description: string,
   isPrivate: boolean,
+};
+
+export type ResponseFragment = {
+  __typename: "ResponseNode",
+  // The ID of the object.
+  id: string,
+  user: string,
+  responseDelay: number,
+  answer:  {
+    __typename: string,
+    description: string,
+    // The ID of the object.
+    id: string,
+  },
+};
+
+export type ResponseScalarFragment = {
+  __typename: "ResponseNode",
+  // The ID of the object.
+  id: string,
+  user: string,
+  responseDelay: number,
 };
 
 export type UserScalarFragment = {
