@@ -23,7 +23,7 @@ const QuizCard: React.SFC<Props> = (props) => {
     };
     return (
       <Card style={style ? style : {}} >
-        <CardHeader title={`${props.quiz.name}`} />
+        <CardHeader title={props.quiz.name} subheader={props.quiz.id} />
         <CardContent>
           <Typography type="body1">
             {props.quiz.description}

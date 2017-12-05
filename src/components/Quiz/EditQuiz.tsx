@@ -206,6 +206,7 @@ type AllProps = ChildProps<Props, QuizQuery>
 interface State {
   quiz: QuizScalarFragment;
   questions: string[];
+  counter: number;
 }
 
 const emptyQuiz = {
@@ -217,13 +218,10 @@ const emptyQuiz = {
 } as QuizScalarFragment;
 
 class EditQuiz extends React.Component<AllProps, State> {
-  private counter: number;
-
   constructor(p: AllProps) {
     super(p);
-    this.counter = 0;
 
-    this.state = { quiz: emptyQuiz, questions: []};
+    this.state = { quiz: emptyQuiz, questions: [], counter: 0};
   }
 
   componentWillReceiveProps(nextProps: AllProps) {
@@ -232,7 +230,7 @@ class EditQuiz extends React.Component<AllProps, State> {
       if (!areEqualObj(data, this.state.quiz)) {
         const questions = data.questionSet
         && data.questionSet.edges.map(e => e && e.node && e.node.id || '');
-        this.setState({ quiz: data, questions: questions || []});
+        this.setState({ quiz: data, questions: questions || [], counter: questions && questions.length || 0});
       }
     }
   }
@@ -352,9 +350,10 @@ class EditQuiz extends React.Component<AllProps, State> {
   addQuestion = () => {
     this.saveQuiz(this.state.quiz).then(() => {
       const questions = this.state.questions;
-      const id = 'new:' + this.counter++;
+      const id = 'new:' + this.state.counter;
       this.setState({
-        questions: [...questions, id]
+        questions: [...questions, id],
+        counter: this.state.counter + 1
       });
     });
   }

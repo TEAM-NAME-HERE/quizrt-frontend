@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { HeaderContainer } from './components';
 import { Home, About, Explore, Login, Register, GuestHome } from './pages';
-import { EnterSession } from './components';
+import EnterSession from './components/EnterSession/EnterSession';
 import { MuiThemeProvider } from 'material-ui/styles';
 import { blueTheme } from './components/styles/theme';
 import { ApolloProvider } from 'react-apollo';
@@ -29,6 +29,7 @@ import { withRouter } from 'react-router';
 import { EditQuiz } from './components/Quiz';
 import Button from 'material-ui/Button';
 import { Helmet } from 'react-helmet';
+import StudentView from './pages/StudentView';
 
 export let store = createStore<State>(
   reducer,
@@ -86,7 +87,7 @@ export const routes = [
   {
     path: '/session/:id/student',
     exact: false,
-    component: (props: RouteComponentProps<{id: string}>) => <p>wuzup {props.match.params.id}</p>
+    component: ({match}: RouteComponentProps<{id: string}>) => <StudentView session={match.params.id} />
   },
   {
     path: '/classes/:cid/settings',

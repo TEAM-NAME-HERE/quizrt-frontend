@@ -16,7 +16,7 @@ export const AnswerListComponent: React.SFC<AnswerListComponentProps> = ({ answe
   return (
     <List>
       {answers.filter(a => a.isCorrect || !filterIncorrect).map(a => (
-        <ListItem button={true} onClick={() => onClick && onClick(a)}>
+        <ListItem key={a.id} button={true} onClick={() => onClick && onClick(a)}>
           <ListItemText primary={a.description} />
         </ListItem>
       ))}
@@ -36,7 +36,8 @@ const withAnswers = graphql<AnswersQuery, Props, WrappedProps>(ANSWERS_QUERY, {
   options: ({ question })  => ({
     variables: {
       question
-    }
+    },
+    pollInterval: 1000
   })
 });
 

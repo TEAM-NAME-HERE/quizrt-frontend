@@ -23,7 +23,7 @@ export const QuestionCardComponent: React.SFC<QuestionCardComponentProps> = (pro
 
   return (
     <Card elevation={elevation} style={style} className={className ? className : ''}>
-      <CardHeader title={props.question.name} />
+      <CardHeader title={props.question.name} subheader={props.question.id} />
       <CardContent>
         <Typography type={display ? 'display2' : 'body1'} component="p">{props.question.prompt}</Typography>
         { !display &&

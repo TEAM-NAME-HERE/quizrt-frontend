@@ -2,11 +2,13 @@ import * as user from '../actions/user';
 
 export interface State {
   uuid: string;
+  name: string;
   isGuest: boolean;
 }
 
 const initialState: State = {
   uuid: '',
+  name: '',
   isGuest: false
 };
 
@@ -15,13 +17,14 @@ export const reducer = (state = initialState, action: user.Actions): State => {
     case user.SET_USER:
       return {
         ...state,
-        uuid: action.payload,
+        uuid: action.payload.id,
+        name: action.payload.name,
         isGuest: false
       };
     case user.SET_GUEST:
       return {
         ...state,
-        uuid: action.payload,
+        name: action.payload,
         isGuest: true
       };
 

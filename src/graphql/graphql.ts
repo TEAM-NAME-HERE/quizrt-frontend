@@ -67,6 +67,27 @@ export type CreateQuizMutation = {
   } | null,
 };
 
+export type CreateResponseMutationVariables = {
+  session: string,
+  user: string,
+  delay?: number | null,
+  answer: string,
+};
+
+export type CreateResponseMutation = {
+  createResponse:  {
+    __typename: "CreateResponsePayload",
+    response:  {
+      __typename: "ResponseNode",
+      // The ID of the object.
+      id: string,
+      user: string,
+      responseDelay: number,
+    } | null,
+    clientMutationId: string | null,
+  } | null,
+};
+
 export type DeleteAnswerMutationVariables = {
   id: string,
 };
@@ -441,6 +462,33 @@ export type ResponsesQuery = {
       // A cursor for use in pagination
       cursor: string,
     } | null >,
+  } | null,
+};
+
+export type SessionQueryVariables = {
+  id: string,
+};
+
+export type SessionQuery = {
+  // The ID of the object
+  session:  {
+    __typename: "SessionNode",
+    // The ID of the object.
+    id: string,
+    isLocked: boolean,
+    displayResults: boolean,
+    sessionDate: string,
+    owner:  {
+      __typename: "UserNode",
+      // The ID of the object.
+      id: string,
+    },
+    currentQuestion:  {
+      __typename: "QuestionNode",
+      // The ID of the object.
+      id: string,
+      name: string,
+    } | null,
   } | null,
 };
 

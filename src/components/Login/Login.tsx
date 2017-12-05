@@ -155,7 +155,7 @@ const Login = compose(
   withRouter,
   loginMutate
 )(connect(null, (d) =>
-  ({ saveUser: async (id: string) => d(setUser(id)) })
+  ({ saveUser: async (id: string, name: string) => d(setUser(id, name)) })
 )((props) => {
   const { saveUser, match, location, history,
           staticContext, login, ...rest } = props as (typeof props) & MutateProps & RouteComponentProps<{}>;
@@ -184,7 +184,7 @@ const Login = compose(
     } else {
       if (result.data.loginUser.user.id) {
         localStorage.setItem(USER_ID, result.data.loginUser.user.id);
-        await saveUser(result.data.loginUser.user.id);
+        await saveUser(result.data.loginUser.user.id, result.data.loginUser.user.name);
         history.replace(staticContext && staticContext.from || '/');
       }
     }

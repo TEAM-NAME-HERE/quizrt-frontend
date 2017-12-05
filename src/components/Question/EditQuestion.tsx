@@ -144,7 +144,12 @@ class EditQuestion extends React.Component<AllProps, State> {
     super(p);
     this.counter = 0;
 
-    this.state = { question: emptyQuestion, answers: [] };
+    let question = emptyQuestion;
+    if (p.question && p.question !== '' && isNewItem(p.question)) {
+      question = {...question, orderNumber: Number(p.question.split(':')[1])};
+    }
+
+    this.state = { question, answers: [] };
   }
 
   componentWillReceiveProps(nextProps: AllProps) {
@@ -278,7 +283,7 @@ class EditQuestion extends React.Component<AllProps, State> {
 
     return (
       <Card style={style ? style : {width: '100%'}}>
-        <CardHeader title={question.name !== '' ? question.name : 'Question'} />
+        <CardHeader title={question.name !== '' ? question.name : 'Question'} subheader={question.id} />
         <CardContent>
           <div style={{display: 'flex', flexFlow: 'column nowrap'}}>
           <TextField

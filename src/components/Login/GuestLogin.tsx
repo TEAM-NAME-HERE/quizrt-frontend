@@ -70,7 +70,7 @@ const GuestLogin = withRouter(connect(null, (d) =>
       {...rest}
       onSubmit={async n => {
         await saveUser(n);
-        history.replace('/');
+        history.replace('/entersession');
       }}
     />
   );

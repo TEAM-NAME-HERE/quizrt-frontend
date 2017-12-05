@@ -1,0 +1,15 @@
+query Session($id: ID!) {
+  session(id: $id) {
+    id
+    isLocked
+    displayResults
+    sessionDate
+    owner {
+      id
+    }
+    currentQuestion {
+      id
+      name
+    }
+  }
+}
