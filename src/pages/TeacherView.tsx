@@ -10,6 +10,8 @@ import { Link, LinkProps } from 'react-router-dom';
 import { Typography } from 'material-ui';
 import { Omit } from 'react-redux';
 import { Loading, Error } from '../components/Messages';
+import Results from '../components/Results/Results';
+import Standing from '../components/Results/Standing';
 
 interface Props {
   session: string;
@@ -59,6 +61,41 @@ type TeacherViewComponentProps = {
 // tslint:disable-next-line:no-any
 const LinkButton = (props: LinkProps & ButtonProps) => <Button component={Link as any} {...props} />;
 
+const EditView: React.SFC<{onEdit: () => void; quiz: string, question: string}> = ({ onEdit, quiz, question }) => (
+  <div>
+    <div>
+      <Button onClick={() => onEdit()}> Save </Button>
+      <LinkButton
+        to={`/ooglyboogly/${quiz}/edit`}
+      >
+        Edit Quiz
+      </LinkButton>
+    </div>
+    <EditQuestion quiz="" question={question} />
+  </div>
+);
+
+const QuestionView: React.SFC<{onEdit: () => void, question: string, onNext: () => void}> =
+({ onEdit, question, onNext }) => (
+  <div>
+    <div>
+      <Button onClick={onEdit}> Edit </Button>
+      <Button onClick={onNext}> Next Question </Button>
+    </div>
+    <Question display={true} question={question} />
+  </div>
+);
+
+const ResultsView: React.SFC<{ onNext: () => void, session: string }> = ({ onNext, session }) => (
+  <div>
+    <div>
+      <Button onClick={onNext}> Continue </Button>
+    </div>
+    <Standing session={session} />
+    <Results session={session} />
+  </div>
+);
+
 class TeacherViewComponent extends React.Component<TeacherViewComponentProps, { edit: boolean }> {
   constructor(p: TeacherViewComponentProps) {
     super(p);
@@ -67,34 +104,43 @@ class TeacherViewComponent extends React.Component<TeacherViewComponentProps, { 
   }
 
   render() {
-    const { session: { session }, advanceQuestion } = this.props;
+    const { session: { session }, advanceQuestion, displayResults } = this.props;
     const { edit } = this.state;
     if (session) {
       if (session.isLocked && !session.currentQuestion) {
         return <Typography type="display3">Quiz is over</Typography>;
       }
+      if (session.displayResults) {
+          return (
+            <ResultsView
+              session={session.id}
+              onNext={() => advanceQuestion()}
+            />
+          );
+      }
       if (session.currentQuestion) {
+        if (edit) {
+          return (
+            <EditView
+              question={session.currentQuestion.id}
+              quiz={session.quiz.id}
+              onEdit={() => this.setState({ edit: false })}
+            />);
+        }
         return (
-        <div>
-          {edit
-          && <div>
-              <Button onClick={() => this.setState({ edit: false })}> Save </Button>
-              <LinkButton
-                to={`/ooglyboogly/${session.currentQuestion.id}/edit`}
-              >
-                Edit Quiz
-              </LinkButton>
-              </div>
-          || <div>
-              <Button onClick={() => this.setState({ edit: true })}> Edit </Button>
-              <Button onClick={() => advanceQuestion()}> Next Question </Button>
-            </div>}
-        {edit && <EditQuestion quiz="" question={session.currentQuestion.id} />
-              || <Question display={true} question={session.currentQuestion.id} />}
-        </div>
+          <QuestionView
+            onEdit={() => this.setState({ edit: true })}
+            question={session.currentQuestion.id}
+            onNext={() => displayResults()}
+          />
         );
       } else {
-        return <Button onClick={() => advanceQuestion()}> Next Question </Button>;
+        return (
+          <div>
+            <Typography type="display4">{session.id}</Typography>
+            <Button raised={true} onClick={() => advanceQuestion()}> Next Question </Button>
+          </div>
+        );
       }
     }
     return <p>No data...</p>;

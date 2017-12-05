@@ -20,10 +20,13 @@ const LinkButton: React.SFC<LinkProps & ButtonProps> = p => <Button component={L
 
 const decorate = withStyles(({ palette, spacing }) => ({
   root: {
-    width: '100%'
+    width: '100%',
   },
   flex: {
     flex: 1
+  },
+  a: {
+    color: 'inherit'
   }
 }));
 
@@ -36,6 +39,7 @@ export interface Props {
 
 type AllProps = WithStyles<'root'>
                & WithStyles<'flex'>
+               & WithStyles<'a'>
                & RouteComponentProps<{}>
                & ChildProps<Props, LogoutUserMutation>;
 
@@ -84,7 +88,7 @@ class Header extends React.Component<AllProps, State> {
           <AppBar position="static">
             <Toolbar>
               <Typography className={classes.flex} type="display4">
-                Quizrt
+                <Link className={classes.a} to="/">Quizrt</Link>
               </Typography>
               {userId ?
               <div>

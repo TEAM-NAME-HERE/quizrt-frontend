@@ -561,6 +561,34 @@ export type SessionQuery = {
   } | null,
 };
 
+export type UserQueryVariables = {
+  user: string,
+};
+
+export type UserQuery = {
+  // The ID of the object
+  user:  {
+    __typename: "UserNode",
+    username: string,
+    email: string,
+    name: string,
+    // The ID of the object.
+    id: string,
+  } | null,
+};
+
+export type UserScoresQueryVariables = {
+  session: string,
+};
+
+export type UserScoresQuery = {
+  userScores:  Array< {
+    __typename: "UserScore",
+    username: string,
+    score: number,
+  } | null >,
+};
+
 export type UserWithProfilesQueryVariables = {
   id: string,
 };

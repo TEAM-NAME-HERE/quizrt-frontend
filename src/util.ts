@@ -105,3 +105,4 @@ export const notEmpty = <T>(value: T | null | undefined): value is T => {
 };
 
 export type Overwrite<T, U> = { [P in Diff<keyof T, keyof U>]: T[P] } & U;
+export type Select<T, K extends keyof T> = T[K];
