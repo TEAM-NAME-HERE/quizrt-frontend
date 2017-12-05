@@ -1,0 +1,10 @@
+#import "../fragments/SessionScalar.graphql"
+mutation DisplayResults($id: ID!) {
+  displayResults(input: {
+    id: $id
+  }) {
+    session {
+      ...SessionScalar
+    }
+  }
+}

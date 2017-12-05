@@ -22,22 +22,22 @@ export interface Props {
 }
 
 interface MutateProps {
-  createQuestion: (question: QuestionScalarFragment, quiz: string) => Promise<QuestionScalarFragment>;
+  createQuestion: (question: QuestionScalarFragment) => Promise<QuestionScalarFragment>;
   changeQuestion: (question: QuestionScalarFragment) => Promise<QuestionScalarFragment>;
   deleteQuestion: (id: string, callback: DeleteCallback) => Promise<void>;
 }
 
 const CREATE_MUTATION = require('../../graphql/mutations/CreateQuestion.graphql');
 const createMutation = graphql<CreateQuestionMutation, MutateProps & Props>(CREATE_MUTATION, {
-  props: ({ mutate }) => ({
-    createQuestion: async (question, quiz) => {
+  props: ({ ownProps, mutate }) => ({
+    createQuestion: async (question) => {
       const results = await mutate!({
         variables: {
           prompt: question.prompt,
           name: question.name,
           order: question.orderNumber,
           duration: question.questionDuration,
-          quiz
+          quiz: ownProps.quiz
         },
         optimisticResponse: {
           createQuestion: {
@@ -83,6 +83,26 @@ const updateMutation = graphql<UpdateQuestionMutation, MutateProps & Props>(UPDA
           name: question.name,
           order: question.orderNumber,
           duration: question.questionDuration
+        },
+        update: (proxy, passed) => {
+          const { data } = passed as { data: UpdateQuestionMutation };
+          if (data && data.updateQuestion && data.updateQuestion.question) {
+            const oldData = proxy.readQuery<QuestionQuery>({
+              query: QUESTION_QUERY,
+              variables: {id: data.updateQuestion.question.id }
+            });
+            const newData = {
+              question: {
+              ...(oldData && oldData.question),
+              ...data.updateQuestion.question
+              }
+            };
+            proxy.writeQuery({
+              query: QUESTION_QUERY,
+              variables: {id: data.updateQuestion.question.id },
+              data: newData
+            });
+          }
         }
       });
 
@@ -164,8 +184,8 @@ class EditQuestion extends React.Component<AllProps, State> {
   }
 
   createQuestion = async (q: QuestionScalarFragment) => {
-    const { createQuestion, quiz } = this.props;
-    const data = await createQuestion(q, quiz);
+    const { createQuestion } = this.props;
+    const data = await createQuestion(q);
     this.setState({
       question: data
     });

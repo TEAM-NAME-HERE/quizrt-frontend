@@ -1,0 +1,6 @@
+fragment SessionScalar on SessionNode {
+  id
+  isLocked
+  sessionDate
+  displayResults
+}

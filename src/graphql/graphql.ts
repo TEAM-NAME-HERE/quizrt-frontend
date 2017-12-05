@@ -1,6 +1,24 @@
 /* tslint:disable */
 //  This file was automatically generated and should not be edited.
 
+export type AdvanceQuestionMutationVariables = {
+  id: string,
+};
+
+export type AdvanceQuestionMutation = {
+  advanceQuestion:  {
+    __typename: "AdvanceQuestionPayload",
+    session:  {
+      __typename: "SessionNode",
+      // The ID of the object.
+      id: string,
+      isLocked: boolean,
+      sessionDate: string,
+      displayResults: boolean,
+    } | null,
+  } | null,
+};
+
 export type CreateAnswerMutationVariables = {
   description: string,
   question: string,
@@ -88,6 +106,25 @@ export type CreateResponseMutation = {
   } | null,
 };
 
+export type CreateSessionMutationVariables = {
+  quiz: string,
+  owner: string,
+};
+
+export type CreateSessionMutation = {
+  createSession:  {
+    __typename: "CreateSessionPayload",
+    session:  {
+      __typename: "SessionNode",
+      // The ID of the object.
+      id: string,
+      isLocked: boolean,
+      sessionDate: string,
+      displayResults: boolean,
+    } | null,
+  } | null,
+};
+
 export type DeleteAnswerMutationVariables = {
   id: string,
 };
@@ -121,6 +158,24 @@ export type DeleteQuizMutation = {
     __typename: "DeleteQuizPayload",
     success: boolean | null,
     clientMutationId: string | null,
+  } | null,
+};
+
+export type DisplayResultsMutationVariables = {
+  id: string,
+};
+
+export type DisplayResultsMutation = {
+  displayResults:  {
+    __typename: "DisplayResultsPayload",
+    session:  {
+      __typename: "SessionNode",
+      // The ID of the object.
+      id: string,
+      isLocked: boolean,
+      sessionDate: string,
+      displayResults: boolean,
+    } | null,
   } | null,
 };
 
@@ -476,10 +531,13 @@ export type SessionQuery = {
     // The ID of the object.
     id: string,
     isLocked: boolean,
-    displayResults: boolean,
     sessionDate: string,
+    displayResults: boolean,
     owner:  {
       __typename: "UserNode",
+      username: string,
+      email: string,
+      name: string,
       // The ID of the object.
       id: string,
     },
@@ -487,8 +545,19 @@ export type SessionQuery = {
       __typename: "QuestionNode",
       // The ID of the object.
       id: string,
+      prompt: string,
       name: string,
+      orderNumber: number,
+      questionDuration: number,
     } | null,
+    quiz:  {
+      __typename: "QuizNode",
+      // The ID of the object.
+      id: string,
+      name: string,
+      description: string,
+      isPrivate: boolean,
+    },
   } | null,
 };
 
@@ -591,6 +660,15 @@ export type ResponseScalarFragment = {
   id: string,
   user: string,
   responseDelay: number,
+};
+
+export type SessionScalarFragment = {
+  __typename: "SessionNode",
+  // The ID of the object.
+  id: string,
+  isLocked: boolean,
+  sessionDate: string,
+  displayResults: boolean,
 };
 
 export type UserScalarFragment = {

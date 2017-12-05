@@ -155,6 +155,7 @@ class Home extends React.Component<AllProps, HomeState> {
                     profile={profile}
                     className={classes.main}
                     onEdit={q => history.push(`/${profile}/${q.id}/edit`)}
+                    onStart={s => history.push(`/session/${s}/teacher`)}
                   />
                 </div>}
               {value === 2 && null}

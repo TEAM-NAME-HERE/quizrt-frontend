@@ -30,6 +30,7 @@ import { EditQuiz } from './components/Quiz';
 import Button from 'material-ui/Button';
 import { Helmet } from 'react-helmet';
 import StudentView from './pages/StudentView';
+import TeacherView from './pages/TeacherView';
 
 export let store = createStore<State>(
   reducer,
@@ -88,6 +89,11 @@ export const routes = [
     path: '/session/:id/student',
     exact: false,
     component: ({match}: RouteComponentProps<{id: string}>) => <StudentView session={match.params.id} />
+  },
+  {
+    path: '/session/:id/teacher',
+    exact: false,
+    component: ({match}: RouteComponentProps<{id: string}>) => <TeacherView session={match.params.id} />
   },
   {
     path: '/classes/:cid/settings',

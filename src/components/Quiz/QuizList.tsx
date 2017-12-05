@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { QuizScalarFragment, QuizzesQuery } from '../../graphql/graphql';
-import QuizCard, { QuizAction } from './QuizCard';
+import { WrappedQuiz, QuizAction } from './Quiz';
 import Typography from 'material-ui/Typography';
 import { Omit } from 'react-redux';
 import { graphql } from 'react-apollo';
@@ -10,7 +10,7 @@ import { Loading, Error } from '../Messages';
 export interface QuizListComponentProps {
   className?: string;
   quizzes: QuizScalarFragment[];
-  onStart?: QuizAction;
+  onStart?: (session: string) => void;
   onEdit?: QuizAction;
 }
 
@@ -26,12 +26,12 @@ export const QuizListComponent: React.SFC<QuizListComponentProps> = (props) => {
       <Typography type="headline"> No Quizzes... </Typography>
     }
     {props.quizzes.map(q =>
-      <QuizCard
+      <WrappedQuiz
         style={{marginBottom: '10px'}}
         quiz={q}
         key={q.id}
         onEdit={handleOnAction(props.onEdit)}
-        onStart={handleOnAction(props.onStart)}
+        onStart={s => props.onStart && props.onStart(s)}
       />)}
   </div>);
 };

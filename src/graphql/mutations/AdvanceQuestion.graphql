@@ -1,0 +1,10 @@
+#import "../fragments/SessionScalar.graphql"
+mutation AdvanceQuestion($id: ID!) {
+  advanceQuestion(input: {
+    id: $id
+  }) {
+    session {
+      ...SessionScalar
+    }
+  }
+}
