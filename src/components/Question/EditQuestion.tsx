@@ -143,8 +143,12 @@ class EditQuestion extends React.Component<AllProps, State> {
   constructor(p: Props & MutateProps) {
     super(p);
     this.counter = 0;
+    let question = emptyQuestion;
+    if (p.question && isNewItem(p.question) && p.question !== '') {
+      question = { ...question, orderNumber: Number(p.question.split(':')[1])};
+    }
 
-    this.state = { question: emptyQuestion, answers: [] };
+    this.state = { question , answers: [] };
   }
 
   componentWillReceiveProps(nextProps: AllProps) {
