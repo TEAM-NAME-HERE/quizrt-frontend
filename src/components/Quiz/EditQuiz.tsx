@@ -104,7 +104,7 @@ const createMutation = graphql<CreateQuizMutation, MutateProps & Props>(CREATE_M
           if (data && createQuiz && createQuiz.quiz && data.createQuiz.quiz.id !== '') {
             const oldData = proxy.readQuery<QuizzesQuery>({
               query: QUIZZES_QUERY, variables: { profile: ownProps.profile } });
-            if (!oldData.quizzes) {
+            if (oldData && !oldData.quizzes) {
               oldData.quizzes = {
                 __typename: 'QuizNodeConnection',
                 pageInfo: {
@@ -117,11 +117,13 @@ const createMutation = graphql<CreateQuizMutation, MutateProps & Props>(CREATE_M
                 edges: []
               };
             }
-            oldData.quizzes!.edges.push({
-              __typename: 'QuizNodeEdge',
-              node: createQuiz.quiz,
-              cursor: ''
-            });
+            if (oldData) {
+              oldData.quizzes!.edges.push({
+                __typename: 'QuizNodeEdge',
+                node: createQuiz.quiz,
+                cursor: ''
+              });
+            }
             proxy.writeQuery({ query: QUIZZES_QUERY, variables: { profile: ownProps.profile }, data: oldData });
           }
         }
@@ -170,7 +172,7 @@ const deleteMutation = graphql<DeleteQuizMutation, MutateProps & Props>(DELETE_M
               query: QUIZZES_QUERY, variables: { profile: ownProps.profile }
             });
 
-            if (oldData.quizzes) {
+            if (oldData && oldData.quizzes) {
               oldData.quizzes.edges = oldData.quizzes.edges.filter(e => e && e.node && e.node.id !== id);
               proxy.writeQuery({ query: QUIZZES_QUERY, variables: { profile: ownProps.profile }, data: oldData });
             }

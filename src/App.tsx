@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { HeaderContainer } from './components';
 import { Home, About, Explore, Login, Register, GuestHome } from './pages';
+import { EnterSession } from './components';
 import { MuiThemeProvider } from 'material-ui/styles';
 import { blueTheme } from './components/styles/theme';
 import { ApolloProvider } from 'react-apollo';
@@ -76,6 +77,16 @@ export const routes = [
     path: '/register',
     exact: false,
     component: Register
+  },
+  {
+    path: '/entersession',
+    exact: false,
+    component: EnterSession
+  },
+  {
+    path: '/session/:id/student',
+    exact: false,
+    component: (props: RouteComponentProps<{id: string}>) => <p>wuzup {props.match.params.id}</p>
   },
   {
     path: '/classes/:cid/settings',
