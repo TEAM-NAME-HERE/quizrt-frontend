@@ -104,7 +104,7 @@ const createMutation = graphql<CreateQuizMutation, MutateProps & Props>(CREATE_M
           if (data && createQuiz && createQuiz.quiz && data.createQuiz.quiz.id !== '') {
             const oldData = proxy.readQuery<QuizzesQuery>({
               query: QUIZZES_QUERY, variables: { profile: ownProps.profile } });
-            if (!oldData.quizzes) {
+            if (oldData && !oldData.quizzes) {
               oldData.quizzes = {
                 __typename: 'QuizNodeConnection',
                 pageInfo: {
@@ -117,11 +117,13 @@ const createMutation = graphql<CreateQuizMutation, MutateProps & Props>(CREATE_M
                 edges: []
               };
             }
-            oldData.quizzes!.edges.push({
-              __typename: 'QuizNodeEdge',
-              node: createQuiz.quiz,
-              cursor: ''
-            });
+            if (oldData) {
+              oldData.quizzes!.edges.push({
+                __typename: 'QuizNodeEdge',
+                node: createQuiz.quiz,
+                cursor: ''
+              });
+            }
             proxy.writeQuery({ query: QUIZZES_QUERY, variables: { profile: ownProps.profile }, data: oldData });
           }
         }
@@ -170,7 +172,7 @@ const deleteMutation = graphql<DeleteQuizMutation, MutateProps & Props>(DELETE_M
               query: QUIZZES_QUERY, variables: { profile: ownProps.profile }
             });
 
-            if (oldData.quizzes) {
+            if (oldData && oldData.quizzes) {
               oldData.quizzes.edges = oldData.quizzes.edges.filter(e => e && e.node && e.node.id !== id);
               proxy.writeQuery({ query: QUIZZES_QUERY, variables: { profile: ownProps.profile }, data: oldData });
             }
@@ -204,6 +206,7 @@ type AllProps = ChildProps<Props, QuizQuery>
 interface State {
   quiz: QuizScalarFragment;
   questions: string[];
+  counter: number;
 }
 
 const emptyQuiz = {
@@ -215,13 +218,10 @@ const emptyQuiz = {
 } as QuizScalarFragment;
 
 class EditQuiz extends React.Component<AllProps, State> {
-  private counter: number;
-
   constructor(p: AllProps) {
     super(p);
-    this.counter = 0;
 
-    this.state = { quiz: emptyQuiz, questions: []};
+    this.state = { quiz: emptyQuiz, questions: [], counter: 0};
   }
 
   componentWillReceiveProps(nextProps: AllProps) {
@@ -230,7 +230,7 @@ class EditQuiz extends React.Component<AllProps, State> {
       if (!areEqualObj(data, this.state.quiz)) {
         const questions = data.questionSet
         && data.questionSet.edges.map(e => e && e.node && e.node.id || '');
-        this.setState({ quiz: data, questions: questions || []});
+        this.setState({ quiz: data, questions: questions || [], counter: questions && questions.length || 0});
       }
     }
   }
@@ -350,9 +350,10 @@ class EditQuiz extends React.Component<AllProps, State> {
   addQuestion = () => {
     this.saveQuiz(this.state.quiz).then(() => {
       const questions = this.state.questions;
-      const id = 'new:' + this.counter++;
+      const id = 'new:' + this.state.counter;
       this.setState({
-        questions: [...questions, id]
+        questions: [...questions, id],
+        counter: this.state.counter + 1
       });
     });
   }

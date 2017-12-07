@@ -1,6 +1,24 @@
 /* tslint:disable */
 //  This file was automatically generated and should not be edited.
 
+export type AdvanceQuestionMutationVariables = {
+  id: string,
+};
+
+export type AdvanceQuestionMutation = {
+  advanceQuestion:  {
+    __typename: "AdvanceQuestionPayload",
+    session:  {
+      __typename: "SessionNode",
+      // The ID of the object.
+      id: string,
+      isLocked: boolean,
+      sessionDate: string,
+      displayResults: boolean,
+    } | null,
+  } | null,
+};
+
 export type CreateAnswerMutationVariables = {
   description: string,
   question: string,
@@ -67,6 +85,46 @@ export type CreateQuizMutation = {
   } | null,
 };
 
+export type CreateResponseMutationVariables = {
+  session: string,
+  user: string,
+  delay?: number | null,
+  answer: string,
+};
+
+export type CreateResponseMutation = {
+  createResponse:  {
+    __typename: "CreateResponsePayload",
+    response:  {
+      __typename: "ResponseNode",
+      // The ID of the object.
+      id: string,
+      user: string,
+      responseDelay: number,
+    } | null,
+    clientMutationId: string | null,
+  } | null,
+};
+
+export type CreateSessionMutationVariables = {
+  quiz: string,
+  owner: string,
+};
+
+export type CreateSessionMutation = {
+  createSession:  {
+    __typename: "CreateSessionPayload",
+    session:  {
+      __typename: "SessionNode",
+      // The ID of the object.
+      id: string,
+      isLocked: boolean,
+      sessionDate: string,
+      displayResults: boolean,
+    } | null,
+  } | null,
+};
+
 export type DeleteAnswerMutationVariables = {
   id: string,
 };
@@ -100,6 +158,24 @@ export type DeleteQuizMutation = {
     __typename: "DeleteQuizPayload",
     success: boolean | null,
     clientMutationId: string | null,
+  } | null,
+};
+
+export type DisplayResultsMutationVariables = {
+  id: string,
+};
+
+export type DisplayResultsMutation = {
+  displayResults:  {
+    __typename: "DisplayResultsPayload",
+    session:  {
+      __typename: "SessionNode",
+      // The ID of the object.
+      id: string,
+      isLocked: boolean,
+      sessionDate: string,
+      displayResults: boolean,
+    } | null,
   } | null,
 };
 
@@ -400,6 +476,119 @@ export type QuizzesQuery = {
   } | null,
 };
 
+export type ResponsesQueryVariables = {
+  before?: string | null,
+  after?: string | null,
+  first?: number | null,
+  last?: number | null,
+  session?: string | null,
+};
+
+export type ResponsesQuery = {
+  responses:  {
+    __typename: "ResponseNodeConnection",
+    pageInfo:  {
+      __typename: "PageInfo",
+      // When paginating forwards, are there more items?
+      hasNextPage: boolean,
+      // When paginating backwards, are there more items?
+      hasPreviousPage: boolean,
+      // When paginating backwards, the cursor to continue.
+      startCursor: string | null,
+      // When paginating forwards, the cursor to continue.
+      endCursor: string | null,
+    },
+    edges:  Array< {
+      __typename: "ResponseNodeEdge",
+      // The item at the end of the edge
+      node:  {
+        __typename: "ResponseNode",
+        // The ID of the object.
+        id: string,
+        user: string,
+        responseDelay: number,
+        answer:  {
+          __typename: "AnswerNode",
+          description: string,
+          // The ID of the object.
+          id: string,
+        },
+      } | null,
+      // A cursor for use in pagination
+      cursor: string,
+    } | null >,
+  } | null,
+};
+
+export type SessionQueryVariables = {
+  id: string,
+};
+
+export type SessionQuery = {
+  // The ID of the object
+  session:  {
+    __typename: "SessionNode",
+    // The ID of the object.
+    id: string,
+    isLocked: boolean,
+    sessionDate: string,
+    displayResults: boolean,
+    owner:  {
+      __typename: "UserNode",
+      username: string,
+      email: string,
+      name: string,
+      // The ID of the object.
+      id: string,
+    },
+    currentQuestion:  {
+      __typename: "QuestionNode",
+      // The ID of the object.
+      id: string,
+      prompt: string,
+      name: string,
+      orderNumber: number,
+      questionDuration: number,
+    } | null,
+    quiz:  {
+      __typename: "QuizNode",
+      // The ID of the object.
+      id: string,
+      name: string,
+      description: string,
+      isPrivate: boolean,
+    },
+  } | null,
+};
+
+export type UserQueryVariables = {
+  user: string,
+};
+
+export type UserQuery = {
+  // The ID of the object
+  user:  {
+    __typename: "UserNode",
+    username: string,
+    email: string,
+    name: string,
+    // The ID of the object.
+    id: string,
+  } | null,
+};
+
+export type UserScoresQueryVariables = {
+  session: string,
+};
+
+export type UserScoresQuery = {
+  userScores:  Array< {
+    __typename: "UserScore",
+    username: string,
+    score: number,
+  } | null >,
+};
+
 export type UserWithProfilesQueryVariables = {
   id: string,
 };
@@ -477,6 +666,37 @@ export type QuizScalarFragment = {
   name: string,
   description: string,
   isPrivate: boolean,
+};
+
+export type ResponseFragment = {
+  __typename: "ResponseNode",
+  // The ID of the object.
+  id: string,
+  user: string,
+  responseDelay: number,
+  answer:  {
+    __typename: string,
+    description: string,
+    // The ID of the object.
+    id: string,
+  },
+};
+
+export type ResponseScalarFragment = {
+  __typename: "ResponseNode",
+  // The ID of the object.
+  id: string,
+  user: string,
+  responseDelay: number,
+};
+
+export type SessionScalarFragment = {
+  __typename: "SessionNode",
+  // The ID of the object.
+  id: string,
+  isLocked: boolean,
+  sessionDate: string,
+  displayResults: boolean,
 };
 
 export type UserScalarFragment = {

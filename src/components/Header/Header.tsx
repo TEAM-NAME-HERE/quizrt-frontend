@@ -13,16 +13,20 @@ import { LogoutUserMutation } from '../../graphql/graphql';
 import { store } from '../../App';
 import { setUser } from '../../actions/user';
 import { USER_ID } from '../../constants';
+import { RouteComponentProps, withRouter } from 'react-router';
 
 // tslint:disable-next-line:no-any
 const LinkButton: React.SFC<LinkProps & ButtonProps> = p => <Button component={Link as any} {...p} />;
 
 const decorate = withStyles(({ palette, spacing }) => ({
   root: {
-    width: '100%'
+    width: '100%',
   },
   flex: {
     flex: 1
+  },
+  a: {
+    color: 'inherit'
   }
 }));
 
@@ -35,6 +39,8 @@ export interface Props {
 
 type AllProps = WithStyles<'root'>
                & WithStyles<'flex'>
+               & WithStyles<'a'>
+               & RouteComponentProps<{}>
                & ChildProps<Props, LogoutUserMutation>;
 
 interface State {
@@ -49,6 +55,11 @@ class Header extends React.Component<AllProps, State> {
 
   handleMenu = (event: {currentTarget: HTMLElement}) => {
     this.setState({ anchorEl: event.currentTarget });
+  }
+
+  handleJoin = async () => {
+    this.handleRequestClose();
+    this.props.history.push('/entersession');
   }
 
   handleLogout = async () => {
@@ -77,7 +88,7 @@ class Header extends React.Component<AllProps, State> {
           <AppBar position="static">
             <Toolbar>
               <Typography className={classes.flex} type="display4">
-                Quizrt
+                <Link className={classes.a} to="/">Quizrt</Link>
               </Typography>
               {userId ?
               <div>
@@ -103,8 +114,7 @@ class Header extends React.Component<AllProps, State> {
                   open={open}
                   onRequestClose={this.handleRequestClose}
                 >
-                  <MenuItem onClick={this.handleRequestClose}>Profile</MenuItem>
-                  <MenuItem onClick={this.handleRequestClose}>My Account</MenuItem>
+                  <MenuItem onClick={this.handleJoin}>Join Quiz</MenuItem>
                   <MenuItem onClick={this.handleLogout}>Logout</MenuItem>
                 </Menu>
               </div>
@@ -119,4 +129,4 @@ class Header extends React.Component<AllProps, State> {
 }
 
 // tslint:disable-next-line:no-any
-export default logoutMutate(decorate<Props>(Header) as any);
+export default withRouter(logoutMutate(decorate<Props>(Header) as any)) as React.ComponentType<Props>;

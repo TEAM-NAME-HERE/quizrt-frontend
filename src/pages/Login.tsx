@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { LoginForm } from '../components';
-import Button, { ButtonProps } from 'material-ui/Button';
+// import Button, { ButtonProps } from 'material-ui/Button';
 import { withStyles } from 'material-ui/styles';
 import { Helmet } from 'react-helmet';
+import { GuestLogin } from '../components/Login/';
 // import { css } from 'glamor';
 
-const btnDecorate = withStyles(({ typography }) => ({
-  root: typography.display2
-}));
+// const btnDecorate = withStyles(({ typography }) => ({
+//   root: typography.display2
+// }));
 
-const BigButton = btnDecorate<ButtonProps>((props) => ( <Button {...props} /> ));
+// const BigButton = btnDecorate<ButtonProps>((props) => ( <Button {...props} /> ));
 
 const decorate = withStyles(({ typography, breakpoints }) => ({
   container: {
@@ -32,14 +33,7 @@ const Login = decorate(({ classes }) => (
         <title>Login</title>
       </Helmet>
       <LoginForm className={classes.element} style={{width: '600px'}} />
-      <BigButton
-        className={classes.element}
-        style={{color: 'white'}}
-        raised={true}
-        color="primary"
-      >
-      Continue as Guest
-      </BigButton>
+      <GuestLogin />
     </div>
 ));
 

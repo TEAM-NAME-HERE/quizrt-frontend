@@ -1,0 +1,6 @@
+#import "../fragments/UserScalar.graphql"
+query User($user: ID!) {
+  user(id: $user) {
+    ...UserScalar
+  }
+}

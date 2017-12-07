@@ -1,0 +1,18 @@
+#import "../fragments/SessionScalar.graphql"
+#import "../fragments/UserScalar.graphql"
+#import "../fragments/QuestionScalar.graphql"
+#import "../fragments/QuizScalar.graphql"
+query Session($id: ID!) {
+  session(id: $id) {
+    ...SessionScalar
+    owner {
+      ...UserScalar
+    }
+    currentQuestion {
+      ...QuestionScalar
+    }
+    quiz {
+      ...QuizScalar
+    }
+  }
+}

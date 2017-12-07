@@ -5,7 +5,7 @@ import DeleteIcon from 'material-ui-icons/Delete';
 import { FormGroup, FormControlLabel } from 'material-ui/Form';
 import TextField from 'material-ui/TextField';
 import { CreateAnswerMutation, AnswerScalarFragment,
-         UpdateAnswerMutation, DeleteAnswerMutation, AnswerQuery } from '../../graphql/graphql';
+         UpdateAnswerMutation, DeleteAnswerMutation, AnswerQuery, AnswersQuery } from '../../graphql/graphql';
 import { graphql, compose } from 'react-apollo';
 import { ChildProps } from 'react-apollo/types';
 import { Loading, Error } from '../Messages';
@@ -33,9 +33,11 @@ interface MutateProps {
   deleteAnswer: (id: string, callback: DeleteCallback) => Promise<void>;
 }
 
+const ANSWERS_QUERY = require('../../graphql/queries/Answers.graphql');
+
 const CREATE_MUTATION = require('../../graphql/mutations/CreateAnswer.graphql');
 const createMutation = graphql<CreateAnswerMutation, MutateProps & Props>(CREATE_MUTATION, {
-  props: ({ mutate }) => ({
+  props: ({ ownProps, mutate }) => ({
     createAnswer: async (answer, question) => {
       const results = await mutate!({
         variables: {
@@ -53,11 +55,41 @@ const createMutation = graphql<CreateAnswerMutation, MutateProps & Props>(CREATE
           }
         } as CreateAnswerMutation,
         // caches the request so we don't hit the server when Question updates
-        update: (proxy, { data }) => {
+        update: (proxy, passed) => {
+          const { data } = passed as { data: CreateAnswerMutation };
           if (data && data.createAnswer && data.createAnswer.answer && data.createAnswer.answer.id !== '') {
-            proxy.writeQuery({ query: ANSWER_QUERY, data: data.createAnswer, variables: {
-              id: data.createAnswer.answer.id
-            }});
+            const oldData = proxy.readQuery<AnswersQuery>({
+              query: ANSWERS_QUERY, variables: { question: ownProps.question }
+            });
+            // tslint:disable-next-line:no-console
+            console.log(oldData);
+            // if (oldData && !oldData.answers) {
+            //   oldData.answers = {
+            //     __typename: 'AnswerNodeConnection',
+            //     pageInfo: {
+            //       __typename: 'PageInfo',
+            //       hasNextPage: false,
+            //       hasPreviousPage: false,
+            //       startCursor: null,
+            //       endCursor: null
+            //     },
+            //     edges: []
+            //   };
+            // }
+            // if (oldData) {
+            //   oldData.answers!.edges.push({
+            //     __typename: 'AnswerNodeEdge',
+            //     node: data.createAnswer.answer,
+            //     cursor: ''
+            //   });
+
+            //   proxy.writeQuery({ query: ANSWERS_QUERY, data: oldData, variables: {
+            //     question: ownProps.question
+            //   }});
+            // }
+            // proxy.writeQuery({ query: ANSWER_QUERY, data: data.createAnswer, variables: {
+            //   id: data.createAnswer.answer.id
+            // }});
           }
         }
       });
