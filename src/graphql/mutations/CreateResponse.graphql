@@ -1,0 +1,14 @@
+#import "../fragments/ResponseScalar.graphql"
+mutation CreateResponse($session: ID!, $user: String!, $delay: Int, $answer: ID!) {
+  createResponse(input: {
+    quizSession: $session,
+    user: $user,
+    responseDelay: $delay,
+    answer: $answer
+  }) {
+    response {
+      ...ResponseScalar
+    }
+    clientMutationId
+  }
+}

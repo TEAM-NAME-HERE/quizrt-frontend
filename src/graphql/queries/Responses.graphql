@@ -1,0 +1,15 @@
+#import "../fragments/Response.graphql"
+#import "../fragments/PageInfo.graphql"
+query Responses($before: String, $after: String, $first: Int, $last: Int, $session: ID) {
+  responses(before: $before, after: $after, first: $first, last: $last, quizSession: $session) {
+    pageInfo {
+      ...PageInfo
+    }
+    edges {
+      node {
+        ...Response
+      }
+      cursor
+    }
+  }
+}

@@ -3,11 +3,11 @@ import { Theme } from 'material-ui/styles';
 
 export const SET_THEME = 'SET_THEME';
 
-type SetUser = {type: string, payload: Theme};
+type SetTheme = {type: string, payload: Theme};
 
-export const setTheme: ActionCreator<SetUser> = (theme: Theme) => ({
+export const setTheme: ActionCreator<SetTheme> = (theme: Theme) => ({
   type: SET_THEME,
   payload: theme
 });
 
-export type Actions = SetUser;
+export type Actions = SetTheme;

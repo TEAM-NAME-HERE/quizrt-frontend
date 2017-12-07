@@ -1,0 +1,11 @@
+#import "../fragments/SessionScalar.graphql"
+mutation CreateSession($quiz: ID!, $owner: ID!) {
+  createSession(input: {
+    quiz: $quiz,
+    owner: $owner
+  }) {
+    session {
+      ...SessionScalar
+    }
+  }
+}

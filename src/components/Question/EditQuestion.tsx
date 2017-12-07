@@ -22,19 +22,22 @@ export interface Props {
 }
 
 interface MutateProps {
-  createQuestion: (question: QuestionScalarFragment, quiz: string) => Promise<QuestionScalarFragment>;
+  createQuestion: (question: QuestionScalarFragment) => Promise<QuestionScalarFragment>;
   changeQuestion: (question: QuestionScalarFragment) => Promise<QuestionScalarFragment>;
   deleteQuestion: (id: string, callback: DeleteCallback) => Promise<void>;
 }
 
 const CREATE_MUTATION = require('../../graphql/mutations/CreateQuestion.graphql');
 const createMutation = graphql<CreateQuestionMutation, MutateProps & Props>(CREATE_MUTATION, {
-  props: ({ mutate }) => ({
-    createQuestion: async (question, quiz) => {
+  props: ({ ownProps, mutate }) => ({
+    createQuestion: async (question) => {
       const results = await mutate!({
         variables: {
           prompt: question.prompt,
-          quiz
+          name: question.name,
+          order: question.orderNumber,
+          duration: question.questionDuration,
+          quiz: ownProps.quiz
         },
         optimisticResponse: {
           createQuestion: {
@@ -76,7 +79,30 @@ const updateMutation = graphql<UpdateQuestionMutation, MutateProps & Props>(UPDA
       const results = await mutate!({
         variables: {
           id: question.id,
-          prompt: question.prompt
+          prompt: question.prompt,
+          name: question.name,
+          order: question.orderNumber,
+          duration: question.questionDuration
+        },
+        update: (proxy, passed) => {
+          const { data } = passed as { data: UpdateQuestionMutation };
+          if (data && data.updateQuestion && data.updateQuestion.question) {
+            const oldData = proxy.readQuery<QuestionQuery>({
+              query: QUESTION_QUERY,
+              variables: {id: data.updateQuestion.question.id }
+            });
+            const newData = {
+              question: {
+              ...(oldData && oldData.question),
+              ...data.updateQuestion.question
+              }
+            };
+            proxy.writeQuery({
+              query: QUESTION_QUERY,
+              variables: {id: data.updateQuestion.question.id },
+              data: newData
+            });
+          }
         }
       });
 
@@ -125,6 +151,9 @@ interface State {
 const emptyQuestion = {
   id: '',
   prompt: '',
+  name: '',
+  questionDuration: 30,
+  orderNumber: 0,
   __typename: 'QuestionNode'
 } as QuestionScalarFragment;
 
@@ -135,7 +164,12 @@ class EditQuestion extends React.Component<AllProps, State> {
     super(p);
     this.counter = 0;
 
-    this.state = { question: emptyQuestion, answers: [] };
+    let question = emptyQuestion;
+    if (p.question && p.question !== '' && isNewItem(p.question)) {
+      question = {...question, orderNumber: Number(p.question.split(':')[1])};
+    }
+
+    this.state = { question, answers: [] };
   }
 
   componentWillReceiveProps(nextProps: AllProps) {
@@ -150,8 +184,8 @@ class EditQuestion extends React.Component<AllProps, State> {
   }
 
   createQuestion = async (q: QuestionScalarFragment) => {
-    const { createQuestion, quiz } = this.props;
-    const data = await createQuestion(q, quiz);
+    const { createQuestion } = this.props;
+    const data = await createQuestion(q);
     this.setState({
       question: data
     });
@@ -176,7 +210,7 @@ class EditQuestion extends React.Component<AllProps, State> {
   saveQuestion = batch(200, (q: QuestionScalarFragment) => {
     const { data, onCreate } = this.props;
     if (data && data.question && areEqualObj(data.question, q)) {
-      return new Promise<void>((_, reject) => reject('No new data'));
+      return new Promise<void>((resolve, _) => resolve());
     }
 
     if (isNewItem(this.state.question.id)) {
@@ -190,7 +224,7 @@ class EditQuestion extends React.Component<AllProps, State> {
     this.saveQuestion(this.state.question);
   }
 
-  handleAnswerDelete = (id: string) => {
+  handleAnswerDelete = (id: string, success: boolean) => {
     const { data } = this.props;
     if (data) {
       data.updateQuery((prev: QuestionQuery) => {
@@ -216,7 +250,6 @@ class EditQuestion extends React.Component<AllProps, State> {
 
   handleAnswerCreate = (oldId: string) => (id: string) => {
     const { data } = this.props;
-    const { answers } = this.state;
     if (data) {
       data.updateQuery((prev: QuestionQuery) => {
         const answerSet = prev.question && prev.question.answerSet;
@@ -234,14 +267,14 @@ class EditQuestion extends React.Component<AllProps, State> {
       });
     }
 
-    const idx = answers.indexOf(oldId);
-    if (idx >= 0) {
-      answers.splice(idx, 1, id);
-    }
+    // const idx = answers.indexOf(oldId);
+    // if (idx >= 0) {
+    //   answers.splice(idx, 1, id);
+    // }
 
-    this.setState({
-      answers
-    });
+    // this.setState({
+    //   answers
+    // });
   }
 
   addAnswer = () => {
@@ -270,8 +303,17 @@ class EditQuestion extends React.Component<AllProps, State> {
 
     return (
       <Card style={style ? style : {width: '100%'}}>
-        <CardHeader title={`Question ${question.id || id}`} />
+        <CardHeader title={question.name !== '' ? question.name : 'Question'} subheader={question.id} />
         <CardContent>
+          <div style={{display: 'flex', flexFlow: 'column nowrap'}}>
+          <TextField
+            id={`question-${question.id || id}-name`}
+            label="Name"
+            value={question.name}
+            onChange={this.handleChange('name')}
+            onBlur={this.handleBlur}
+            margin="normal"
+          />
           <TextField
             id={`question-${question.id || id}-prompt`}
             label="Prompt"
@@ -281,6 +323,7 @@ class EditQuestion extends React.Component<AllProps, State> {
             onBlur={this.handleBlur}
             margin="normal"
           />
+          </div>
           <Typography type="title">Answers</Typography>
           {this.state.answers.map(a => (
             <EditAnswerItem

@@ -1,0 +1,6 @@
+query UserScores($session: ID!) {
+  userScores(id: $session) {
+    username
+    score
+  }
+}

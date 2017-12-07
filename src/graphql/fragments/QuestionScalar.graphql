@@ -1,4 +1,7 @@
 fragment QuestionScalar on QuestionNode {
   id
   prompt
+  name
+  orderNumber
+  questionDuration
 }

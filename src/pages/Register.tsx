@@ -5,6 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import { compose } from 'redux';
 import { setTheme } from '../actions/theme';
 import { redTheme } from '../components/styles/theme';
+import { Helmet } from 'react-helmet';
 
 const decorate = withStyles(({ palette }) => ({
   container: {
@@ -24,6 +25,9 @@ const Register = wrapper((props: any) => {
   props.dispatch(setTheme(redTheme));
   return (
     <div className={props.classes.container} >
+      <Helmet>
+        <title>Register</title>
+      </Helmet>
       <RegisterForm style={{width: '600px'}} />
     </div>
   );

@@ -4,12 +4,14 @@ import TextField from 'material-ui/TextField';
 import Card, { CardActions, CardContent } from 'material-ui/Card';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import { graphql, ChildProps } from 'react-apollo';
-import { Link, Redirect } from 'react-router-dom';
-import { LoginUserMutation, LoginUserMutationVariables } from '../../graphql/graphql';
-import { store } from '../../App';
+import { graphql, compose } from 'react-apollo';
+import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
+import { LoginUserMutation } from '../../graphql/graphql';
 import { setUser } from '../../actions/user';
 import { USER_ID } from '../../constants';
+import { noop } from '../../util';
+import { connect } from 'react-redux';
+import { ApolloQueryResult } from 'apollo-client';
 
 const decorate = withStyles(({ palette, spacing }) => ({
   card: {
@@ -25,83 +27,57 @@ export interface Props {
   className?: string;
 }
 
-type AllProps = WithStyles<'card'>
-              & WithStyles<'content'>
-              & ChildProps<Props, LoginUserMutation>;
-
 interface State {
   email: string;
   password: string;
   error?: string;
-  redirect?: boolean;
 }
 
-const LOGIN_MUTATION = require('../../graphql/mutations/Login.graphql');
+export interface LoginCardProps {
+  style?: React.CSSProperties;
+  className?: string;
+  elevation?: number;
+  onSubmit?: (cred: State) => Promise<void>;
+}
 
-const queryVars = (props: State): LoginUserMutationVariables => ({
-  password: props.password,
-  email: props.email
-});
+type AllProps = WithStyles<'card'>
+              & WithStyles<'content'>
+              & LoginCardProps;
 
-const loginMutate = graphql<LoginUserMutation, Props>(LOGIN_MUTATION, {});
-
-class LoginComponent extends React.Component<AllProps, State> {
+class LoginCardComponent extends React.Component<AllProps, State> {
   constructor(props: AllProps) {
     super(props);
-
-    const userUuid = store.getState().user.uuid;
 
     this.state = {
       email: '',
       password: '',
-      redirect: !!userUuid
     };
   }
 
-  submit = async () => {
-    const { mutate } = this.props;
-
-    const result = await mutate!({
-      variables: queryVars(this.state)
+  private submit = () => {
+    const { onSubmit } = this.props;
+    (onSubmit || noop)(this.state).catch(e => {
+      // tslint:disable-next-line:no-console
+      console.log('error');
+      this.setState({
+        error: e.message
+      });
     });
-    if (result.errors && result.errors[0].message === '401 Unauthorized') {
-      this.setState({
-        ...this.state,
-        error: 'Invalid username or password',
-        redirect: false
-      });
-    } else if (!result.data.loginUser) {
-      this.setState({
-        ...this.state,
-        error: 'Unknown server error',
-        redirect: false
-      });
-    } else {
-      this.setState({
-        ...this.state,
-        error: undefined,
-        redirect: true
-      });
-      if (result.data.loginUser.user.id) {
-        localStorage.setItem(USER_ID, result.data.loginUser.user.id);
-        store.dispatch(setUser(result.data.loginUser.user.id));
-      }
-    }
   }
 
-  handleKeyUp = async (evt: React.KeyboardEvent<HTMLDivElement>) => {
-    if (evt.keyCode === 13) {
+  private handleKeyUp = (evt: React.KeyboardEvent<HTMLDivElement>) => {
+    if (evt.key === 'Enter') {
       evt.persist();
-      await this.submit();
+      this.submit();
     }
   }
 
   // tslint:disable-next-line:no-any
-  handleClick = async (evt: React.MouseEvent<any>) => {
-    await this.submit();
+  private handleClick = (evt: React.MouseEvent<any>) => {
+    this.submit();
   }
 
-  handleChange = (name: 'email'|'password') => (event: React.ChangeEvent<HTMLInputElement>) => {
+  private handleChange = (name: 'email'|'password') => (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     this.setState((s, p) => ({
       ...s,
@@ -109,12 +85,11 @@ class LoginComponent extends React.Component<AllProps, State> {
     }));
   }
 
+  // tslint:disable-next-line:member-ordering
   render() {
-    // const { from } = this.props.location.state || '/'
-    const from = false;
-    const { classes, style, className } = this.props;
+    const { classes, style, className, onSubmit, ...rest } = this.props;
     return (
-      <Card style={style ? style : {}} className={`${classes.card} ${className ? className : ''}`}>
+      <Card {...rest} style={style} className={`${classes.card} ${className ? className : ''}`}>
         <CardContent>
           <Typography type="display3" component="h2">
             Login
@@ -151,10 +126,73 @@ class LoginComponent extends React.Component<AllProps, State> {
         <CardActions>
           <Button dense={true} color="primary" onClick={this.handleClick}>Login</Button>
         </CardActions>
-        {this.state.redirect && <Redirect to={from || '/'} />}
       </Card>
     );
   }
 }
 
-export default loginMutate(decorate<Props>(LoginComponent));
+export const LoginCard = decorate<LoginCardProps>(LoginCardComponent);
+
+interface MutateProps {
+  login: (creds: {email: string, password: string}) => Promise<ApolloQueryResult<LoginUserMutation>>;
+}
+
+const LOGIN_MUTATION = require('../../graphql/mutations/Login.graphql');
+const loginMutate = graphql<LoginUserMutation, Props & MutateProps>(LOGIN_MUTATION, {
+  props: ({ mutate }) => ({
+    login: ({ email, password }) => {
+      return mutate!({
+        variables: {
+          email,
+          password
+        }
+      });
+    }
+  } as Partial<MutateProps & Props>)
+});
+
+const Login = compose(
+  withRouter,
+  loginMutate
+)(connect(null, (d) =>
+  ({ saveUser: async (id: string, name: string) => d(setUser(id, name)) })
+)((props) => {
+  const { saveUser, match, location, history,
+          staticContext, login, ...rest } = props as (typeof props) & MutateProps & RouteComponentProps<{}>;
+  const error = (e: Error) => {
+    if (e.message.indexOf('401 Unauthorized') >= 0) {
+      throw new Error('Invalid username or password');
+    } else {
+      throw new Error('Unknown server error');
+    }
+  };
+
+  const submit = async (cred: State) => {
+    let result;
+    try {
+      result = await login(cred);
+    } catch (e) {
+      error(e);
+      return;
+    }
+
+    if (result.errors) {
+      error(result.errors[0]);
+      return;
+    } else if (!result.data.loginUser) {
+      throw 'Invalid username or password';
+    } else {
+      if (result.data.loginUser.user.id) {
+        localStorage.setItem(USER_ID, result.data.loginUser.user.id);
+        await saveUser(result.data.loginUser.user.id, result.data.loginUser.user.name);
+        history.replace(staticContext && staticContext.from || '/');
+      }
+    }
+  };
+
+  return (
+    <LoginCard {...rest} onSubmit={submit} />
+  );
+})) as React.ComponentType<Props>;
+
+export default Login;

@@ -1,0 +1,8 @@
+#import "./ResponseScalar.graphql"
+fragment Response on ResponseNode {
+  ...ResponseScalar
+  answer {
+    description
+    id
+  }
+}
