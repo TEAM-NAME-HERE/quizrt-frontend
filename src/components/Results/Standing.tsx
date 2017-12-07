@@ -14,7 +14,7 @@ interface StandingComponentProps {
 const StandingComponent: React.SFC<StandingComponentProps> = ({ users }) => (
   <div>
     {users.filter(notEmpty).sort((a, b) => b.score - a.score).map((u, id) =>
-      <Typography component="p" key={id}>
+      <Typography component="p" type="display3" key={id}>
         <strong>{u.username}</strong>: {u.score}
       </Typography>
     )}

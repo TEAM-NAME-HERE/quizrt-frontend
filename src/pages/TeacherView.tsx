@@ -7,11 +7,12 @@ import { AdvanceQuestionMutation, DisplayResultsMutation,
 import EditQuestion from '../components/Question/EditQuestion';
 import Question from '../components/Question/Question';
 import { Link, LinkProps } from 'react-router-dom';
-import { Typography } from 'material-ui';
+import { Typography, Divider } from 'material-ui';
 import { Omit } from 'react-redux';
 import { Loading, Error } from '../components/Messages';
 import Results from '../components/Results/Results';
 import Standing from '../components/Results/Standing';
+import AnswerList from '../components/Answer/AnswerList';
 
 interface Props {
   session: string;
@@ -41,6 +42,9 @@ export const advanceMutate = graphql<AdvanceQuestionMutation, MutateProps & Prop
   })
 });
 
+const USER_SCORES_QUERY = require('../graphql/queries/UserScores.graphql');
+const RESULTS_QUERY = require('../graphql/queries/Responses.graphql');
+
 const DISPLAY_RESULTS_MUTATION = require('../graphql/mutations/DisplayResults.graphql');
 export const displayMutate = graphql<DisplayResultsMutation, MutateProps & Props>(DISPLAY_RESULTS_MUTATION, {
   props: ({ ownProps, mutate }) => ({
@@ -48,10 +52,21 @@ export const displayMutate = graphql<DisplayResultsMutation, MutateProps & Props
       return mutate!({
         variables: {
           id: ownProps.session
-        } as DisplayResultsMutationVariables
+        } as DisplayResultsMutationVariables,
+        refetchQueries: [{
+          query: USER_SCORES_QUERY,
+          variables: {
+            session: ownProps.session
+          }
+        }, {
+          query: RESULTS_QUERY,
+          variables: {
+            session: ownProps.session
+          }
+        }]
       });
     }
-  })
+  }),
 });
 
 type TeacherViewComponentProps = {
@@ -63,8 +78,8 @@ const LinkButton = (props: LinkProps & ButtonProps) => <Button component={Link a
 
 const EditView: React.SFC<{onEdit: () => void; quiz: string, question: string}> = ({ onEdit, quiz, question }) => (
   <div>
-    <div>
-      <Button onClick={() => onEdit()}> Save </Button>
+    <div style={{padding: 10}}>
+      <Button raised={true} onClick={() => onEdit()}> Save </Button>
       <LinkButton
         to={`/ooglyboogly/${quiz}/edit`}
       >
@@ -78,21 +93,25 @@ const EditView: React.SFC<{onEdit: () => void; quiz: string, question: string}> 
 const QuestionView: React.SFC<{onEdit: () => void, question: string, onNext: () => void}> =
 ({ onEdit, question, onNext }) => (
   <div>
-    <div>
+    <div style={{padding: 10}}>
       <Button onClick={onEdit}> Edit </Button>
-      <Button onClick={onNext}> Next Question </Button>
+      <Button raised={true} onClick={onNext}> Next Question </Button>
     </div>
     <Question display={true} question={question} />
   </div>
 );
 
-const ResultsView: React.SFC<{ onNext: () => void, session: string }> = ({ onNext, session }) => (
+const ResultsView: React.SFC<{ onNext: () => void, session: string, question: string }> =
+({ onNext, session, question }) => (
   <div>
-    <div>
-      <Button onClick={onNext}> Continue </Button>
+    <div style={{padding: 10}}>
+      <Button raised={true} onClick={onNext}> Continue </Button>
     </div>
     <Standing session={session} />
+    <Divider />
     <Results session={session} />
+    <Divider />
+    {question !== '' && <AnswerList question={question} filterIncorrect={true} />}
   </div>
 );
 
@@ -115,6 +134,7 @@ class TeacherViewComponent extends React.Component<TeacherViewComponentProps, { 
             <ResultsView
               session={session.id}
               onNext={() => advanceQuestion()}
+              question={session.currentQuestion && session.currentQuestion.id || ''}
             />
           );
       }

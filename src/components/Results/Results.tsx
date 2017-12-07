@@ -4,6 +4,7 @@ import { Omit } from 'react-redux';
 import { QueryProps } from 'react-apollo/types';
 import { graphql } from 'react-apollo';
 import { Loading, Error } from '../Messages';
+import { Typography } from 'material-ui';
 
 export interface ResultsComponentProps {
   responses: ResponseFragment[];
@@ -23,12 +24,12 @@ const ResultsComponent: React.SFC<ResultsComponentProps> = ({ responses }) => {
   return (
     <div>
         {
-          Object.keys(counts).map(key => (
-            <p>
-              <strong>{counts[key]}</strong>
-              people answered:
-              <pre>{key}</pre>
-            </p>
+          Object.keys(counts).map((key, idx) => (
+            <div key={idx}>
+            <Typography type="display2" component="pre">
+              <strong>{counts[key]}</strong> people answered: {key}
+            </Typography>
+            </div>
           ))
         }
     </div>

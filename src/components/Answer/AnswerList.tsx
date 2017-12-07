@@ -41,12 +41,12 @@ const withAnswers = graphql<AnswersQuery, Props, WrappedProps>(ANSWERS_QUERY, {
   })
 });
 
-export default withAnswers(({ loading, answers, error, onClick }) => {
+export default withAnswers(({ loading, answers, error, onClick, filterIncorrect }) => {
   if (loading) { return <Loading />; }
   if (error) { return <Error error={error} />; }
   if (answers) {
     const filtered = answers.edges.filter(e => e && e.node).map(e => e!.node);
-    return <AnswerListComponent onClick={onClick} answers={filtered as AnswerScalarFragment[]} />;
+    return <AnswerListComponent filterIncorrect={filterIncorrect} onClick={onClick} answers={filtered as AnswerScalarFragment[]} />;
   } else {
     return <p>No data...</p>;
   }

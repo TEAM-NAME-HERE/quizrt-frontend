@@ -61,29 +61,35 @@ const createMutation = graphql<CreateAnswerMutation, MutateProps & Props>(CREATE
             const oldData = proxy.readQuery<AnswersQuery>({
               query: ANSWERS_QUERY, variables: { question: ownProps.question }
             });
-            if (oldData && !oldData.answers) {
-              oldData.answers = {
-                __typename: 'AnswerNodeConnection',
-                pageInfo: {
-                  __typename: 'PageInfo',
-                  hasNextPage: false,
-                  hasPreviousPage: false,
-                  startCursor: null,
-                  endCursor: null
-                },
-                edges: []
-              };
-            }
-            if (oldData) {
-              oldData.answers!.edges.push({
-                __typename: 'AnswerNodeEdge',
-                node: data.createAnswer.answer,
-                cursor: ''
-              });
-            }
-            proxy.writeQuery({ query: ANSWER_QUERY, data: data.createAnswer, variables: {
-              id: data.createAnswer.answer.id
-            }});
+            // tslint:disable-next-line:no-console
+            console.log(oldData);
+            // if (oldData && !oldData.answers) {
+            //   oldData.answers = {
+            //     __typename: 'AnswerNodeConnection',
+            //     pageInfo: {
+            //       __typename: 'PageInfo',
+            //       hasNextPage: false,
+            //       hasPreviousPage: false,
+            //       startCursor: null,
+            //       endCursor: null
+            //     },
+            //     edges: []
+            //   };
+            // }
+            // if (oldData) {
+            //   oldData.answers!.edges.push({
+            //     __typename: 'AnswerNodeEdge',
+            //     node: data.createAnswer.answer,
+            //     cursor: ''
+            //   });
+
+            //   proxy.writeQuery({ query: ANSWERS_QUERY, data: oldData, variables: {
+            //     question: ownProps.question
+            //   }});
+            // }
+            // proxy.writeQuery({ query: ANSWER_QUERY, data: data.createAnswer, variables: {
+            //   id: data.createAnswer.answer.id
+            // }});
           }
         }
       });
